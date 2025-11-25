@@ -1,0 +1,80 @@
+openapi: 3.1.0
+info:
+  title: Citizen Karen API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: OK
+  /complaints:
+    post:
+      summary: Submit complaint
+      operationId: submitComplaint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Complaint'
+      responses:
+        '201':
+          description: Complaint accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComplaintResponse'
+  /complaints/{id}:
+    get:
+      summary: Get complaint status
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Complaint status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComplaintStatus'
+components:
+  schemas:
+    Complaint:
+      type: object
+      required: [agency, phoneNumber, description, timestamp]
+      properties:
+        agency:
+          type: string
+        phoneNumber:
+          type: string
+        description:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+    ComplaintResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        received:
+          type: boolean
+        state:
+          type: string
+    ComplaintStatus:
+      type: object
+      properties:
+        id:
+          type: string
+        state:
+          type: string
+        agencyReference:
+          type: string
+
