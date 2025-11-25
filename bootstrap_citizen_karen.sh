@@ -1,4 +1,23 @@
-Team Booking Calendar -> https://calendar.app.google/Wt3PZsR2sbzLsZKCA 
+#!/usr/bin/env bash
+set -e
+
+echo "Bootstrapping Citizen Karen monorepo structure..."
+
+# Root files and directories
+mkdir -p .github/workflows
+mkdir -p docs diagrams api/backend_schemas
+mkdir -p backend/app/{core,api/v1,models,services,plugins,db,migrations,utils}
+mkdir -p backend/tests/{unit,integration}
+mkdir -p frontend/src/{components,pages,services,theme}
+mkdir -p frontend/tests
+mkdir -p infra/{k8s,monitoring,mock-agencies}
+mkdir -p branding
+
+################################
+# Root: README & .gitignore
+################################
+
+cat > README.md << 'EOF'
 # Citizen Karen™ — Unified Government Complaint Platform
 
 Citizen Karen is a plugin-based platform that lets citizens submit complaints
@@ -13,20 +32,12 @@ Citizen Karen is a plugin-based platform that lets citizens submit complaints
 - `infra/` – Docker Compose, K8s manifests, monitoring
 - `branding/` – Logos, color palettes, design assets
 
-## Quick Start (Dev)
+## Quick Start (Backend Dev)
 
 ```bash
-# Backend (FastAPI)
 cd backend
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 uvicorn app.main:app --reload
 
-# Frontend (later)
-cd frontend
-npm install
-npm start
-
-API will be available at: http://localhost:8000
-OpenAPI docs: http://localhost:8000/docs
