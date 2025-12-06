@@ -4,3 +4,4 @@ httpx
 pydantic
 mkdocs-callouts
 mkdocs
+mkdocs-click
