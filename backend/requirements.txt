@@ -3,5 +3,10 @@ uvicorn[standard]
 httpx
 pydantic
 mkdocs-callouts
-mkdocs
 mkdocs-click
+mkdocs
+pymdown-extensions
+mkdocs-redirects
+mkdocs-autorefs
+mkdocs-literate-nav
+mkdocstrings[python]
