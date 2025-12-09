@@ -5,6 +5,14 @@ Karing USA targets **WCAG 2.1 AA** compliance.
 
 ---
 
+✅ React Stack
+  react-aria
+  react-i18next
+  Lighthouse CI accessibility audit
+
+✅ Legal importance
+  Accessibility is not optional for government-adjacent platforms.
+
 ## Frontend Requirements
 
 - Full keyboard navigation
