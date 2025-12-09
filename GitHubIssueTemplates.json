@@ -1,0 +1,78 @@
+[
+  {
+    "name": "🛠️ Phase 0.1 – Feature / Infra Task",
+    "description": "New feature, infrastructure change, or core setup for POC",
+    "labels": ["phase:POC","type:feature"],
+    "body": {
+      "title": "[POC] ",
+      "columns": [
+        { "field": "### What", "value": "Describe the feature or infra work to implement." },
+        { "field": "### Why",  "value": "Why it's needed — problem it solves or improvement." },
+        { "field": "### Acceptance Criteria", "value": "- [] Explain criteria #1\n- [] Explain criteria #2\n" },
+        { "field": "### Notes / Additional Info", "value": "" }
+      ]
+    }
+  },
+  {
+    "name": "🚨 Bug Report",
+    "description": "Report a bug or unexpected behavior in the platform",
+    "labels": ["type:bug"],
+    "body": {
+      "title": "[BUG] ",
+      "columns": [
+        { "field": "## Describe the bug", "value": "A clear and concise description of what is wrong." },
+        { "field": "## Steps to reproduce", "value": "1. Step one\n2. Step two\n3. etc." },
+        { "field": "## Expected behavior", "value": "" },
+        { "field": "## Actual behavior / Error messages", "value": "" },
+        { "field": "## Environment / Version", "value": "Backend version: , Frontend version: , Browser / OS: , Other relevant config:" },
+        { "field": "## Additional context / Logs", "value": "" }
+      ]
+    }
+  },
+  {
+    "name": "✨ New Agency Module Request",
+    "description": "Request or plan to integrate a new upstream agency module/connector",
+    "labels": ["type:enhancement","needs:agency-review"],
+    "body": {
+      "title": "[AGENCY MODULE] ",
+      "columns": [
+        { "field": "## Agency Name", "value": "" },
+        { "field": "## What the module should do", "value": "- Validate citizen input\n- Transform payload\n- Submit to agency or automation\n- Track status / support follow-up" },
+        { "field": "## Data required from user", "value": "" },
+        { "field": "## Submission method (API / automation / PDF / form‑fill)", "value": "" },
+        { "field": "## Special compliance / legal issues", "value": "" },
+        { "field": "## Risk score (low / medium / high)", "value": "" },
+        { "field": "## Additional notes / caveats", "value": "" }
+      ]
+    }
+  },
+  {
+    "name": "📄 Docs / Policy Update",
+    "description": "Update or add documentation, policies, or compliance-related docs",
+    "labels": ["type:docs"],
+    "body": {
+      "title": "[DOCS] ",
+      "columns": [
+        { "field": "## What to add or update", "value": "" },
+        { "field": "## Purpose / Why", "value": "" },
+        { "field": "## Affected files / modules", "value": "" },
+        { "field": "## Reviewer / Stakeholder (if any)", "value": "" }
+      ]
+    }
+  },
+  {
+    "name": "🔒 Security / Compliance Review",
+    "description": "Security or compliance issue, audit, or vulnerability report",
+    "labels": ["type:security","needs:review"],
+    "body": {
+      "title": "[SECURITY] ",
+      "columns": [
+        { "field": "## Issue Description", "value": "" },
+        { "field": "## Severity (low / medium / high)", "value": "" },
+        { "field": "## Steps to Reproduce / Risk Vector", "value": "" },
+        { "field": "## Suggested Mitigation / Fix", "value": "" },
+        { "field": "## Impacted Components", "value": "" }
+      ]
+    }
+  }
+]
