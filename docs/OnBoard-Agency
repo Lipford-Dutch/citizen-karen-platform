@@ -1,0 +1,61 @@
+✅ Steps to Onboard a New Agency
+
+Research Agency Intake Mechanism
+
+Does the agency offer a public API?
+
+If not, can submission be automated (form‑filling, web automation, PDF + e‑signature)?
+
+What data and documentation does submission require?
+
+What is the expected response / confirmation (ticket number, email, reference)?
+
+Define Agency Schema
+
+Create schema.json describing all required and optional fields (use JSON Schema standard or Pydantic)
+
+Include validations (types, formats, regex, conditional logic)
+
+Implement Module Logic
+
+validators.py: sanitize and validate citizen‑friendly payload
+
+submitter.py: implement submission logic (API call, automation)
+
+status_checker.py: if agency supports status polling or web scraping — implement retrieval
+
+(Optional) escalator.py: implement appeals or follow-up logic
+
+Write Tests
+
+Unit tests: for validation, schema compatibility, transformation logic
+
+Integration tests (mock or real): simulate a submission and, optionally, status check (or mock responses)
+
+Edge‑case tests: missing fields, invalid data, network errors, retries
+
+Document Module
+
+Add README.md in module directory: describe agency quirks, special requirements, known limitations
+
+Provide a .env.template listing required config variables
+
+Add to Plugin Registry
+
+In the central plugin loader (e.g. backend/plugins/__init__.py or registry file), import and register the new module
+
+Assign a unique agency_id for labeling submissions
+
+Instrumentation & Logging
+
+Add metrics: submission success/failure counters, submission latency, retry count
+
+Log structured events: submission attempt, result, errors, status updates — include tracking_id, agency_id, and metadata (but exclude PII)
+
+Deploy & Monitor
+
+Deploy module in dev / staging environment first
+
+Run test submissions, monitor metrics & logs, verify status retrieval works
+
+Once stable, promote to production
