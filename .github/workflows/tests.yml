@@ -1,0 +1,119 @@
+name: CI — Backend + Frontend Tests
+
+on:
+  push:
+    branches:
+      - main
+      - "feature/**"
+      - "bugfix/**"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  backend-tests:
+    name: Backend Tests (pytest)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.11]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          check-latest: true
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          pip install pytest pytest-cov
+
+      - name: Run backend tests
+        working-directory: ./backend
+        run: |
+          pytest --cov=./ --cov-report=xml
+
+      - name: Archive coverage report
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-coverage-report
+          path: backend/coverage.xml
+
+  frontend-tests:
+    name: Frontend Tests (Jest + RTL + Axe)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Run frontend tests
+        working-directory: ./frontend
+        run: npm test -- --ci --coverage
+
+      - name: Archive coverage report
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-coverage-report
+          path: frontend/coverage
+
+  lint-backend:
+    name: Backend Lint & Format Check
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.11]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install lint tools
+        working-directory: ./backend
+        run: |
+          pip install flake8 black isort
+      - name: Run lint
+        working-directory: ./backend
+        run: |
+          black --check .
+          isort --check-only .
+          flake8 .
+
+  lint-frontend:
+    name: Frontend Lint & Style Check
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - name: Install deps
+        working-directory: ./frontend
+        run: npm ci
+      - name: Run ESLint / Prettier check
+        working-directory: ./frontend
+        run: |
+          npm run lint   # assumes you have lint script configured
