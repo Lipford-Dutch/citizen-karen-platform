@@ -8,12 +8,51 @@ Citizen Karen is a plugin-based platform that lets citizens submit complaints
 
 ## Monorepo Layout
 
-- `backend/` – FastAPI + plugin engine
-- `frontend/` – React SPA for citizens + admins
-- `api/` – OpenAPI spec + shared schemas
-- `docs/` – BRD/TRD, roadmap, pricing, integration guides
-- `infra/` – Docker Compose, K8s manifests, monitoring
-- `branding/` – Logos, color palettes, design assets
+karing-usa/
+├── backend/                # FastAPI + agency plugin engine
+│   └── app/
+│       ├── api/
+│       ├── plugins/
+│       ├── models.py
+│       ├── db.py
+│       ├── logging_config.py
+│       ├── metrics.py
+│       └── main.py
+│   ├── Dockerfile
+│   └── requirements.txt
+├── frontend/               # React SPA for citizen + admin views
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── App.jsx
+│   │   ├── api.js
+│   │   └── index.css
+│   ├── package.json
+│   └── Dockerfile
+├── api/                    # OpenAPI 3.1 spec + shared schemas
+│   ├── openapi.yaml
+│   └── schemas/
+│       └── complaint.schema.json
+├── docs/                   # Docs: BRD, TRD, guides, roadmap
+│   ├── business-requirements.md
+│   ├── technical-architecture.md
+│   ├── integration-guide.md
+│   ├── roadmap.md
+│   └── pricing.md
+├── infra/                  # Infra as Code: Docker Compose, K8s, monitoring
+│   ├── docker-compose.yml
+│   ├── prometheus.yml
+│   └── k8s/
+│       ├── frontend.yaml
+│       ├── backend.yaml
+│       └── postgres.yaml
+├── branding/               # Logos, fonts, palettes, Figma exports
+│   ├── logo.svg
+│   ├── favicon.ico
+│   ├── brand-colors.md
+│   └── design-system.fig
+└── README.md
+
 
 ## Quick Start (Dev)
 
