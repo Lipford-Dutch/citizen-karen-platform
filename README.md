@@ -1,23 +1,29 @@
-Grafana Cloud - https://karingusa01.grafana.net/a/grafana-setupguide-app/home
+# 🏛️ Citizen Karen™ — Unified Government Complaint Platform
 
-Team Booking Calendar -> https://calendar.app.google/Wt3PZsR2sbzLsZKCA 
-# Citizen Karen™ — Unified Government Complaint Platform
+Citizen Karen is a plugin-based platform that lets citizens submit complaints (FCC, IRS, CFPB, state agencies, etc.) through a **single portal and API**.
 
-Citizen Karen is a plugin-based platform that lets citizens submit complaints
-(FCC, IRS, CFPB, state agencies, etc.) through a single portal and API.
+## 🔗 Important Links
 
-## Monorepo Layout
+* **Grafana Cloud (Monitoring/Metrics):** [https://karingusa01.grafana.net/a/grafana-setupguide-app/home](https://karingusa01.grafana.net/a/grafana-setupguide-app/home)
+* **Team Booking Calendar:** [https://calendar.app.google/Wt3PZsR2sbzLsZKCA](https://calendar.app.google/Wt3PZsR2sbzLsZKCA)
 
+---
+
+## 🏗️ Monorepo Layout
+
+The repository uses a monorepo structure, organized as follows:
+
+```text
 karing-usa/
 ├── backend/                # FastAPI + agency plugin engine
-│   └── app/
-│       ├── api/
-│       ├── plugins/
-│       ├── models.py
-│       ├── db.py
-│       ├── logging_config.py
-│       ├── metrics.py
-│       └── main.py
+│   ├── app/
+│   │   ├── api/
+│   │   ├── plugins/
+│   │   ├── models.py
+│   │   ├── db.py
+│   │   ├── logging_config.py
+│   │   ├── metrics.py
+│   │   └── main.py
 │   ├── Dockerfile
 │   └── requirements.txt
 ├── frontend/               # React SPA for citizen + admin views
@@ -52,22 +58,3 @@ karing-usa/
 │   ├── brand-colors.md
 │   └── design-system.fig
 └── README.md
-
-
-## Quick Start (Dev)
-
-```bash
-# Backend (FastAPI)
-cd backend
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload
-
-# Frontend (later)
-cd frontend
-npm install
-npm start
-
-API will be available at: http://localhost:8000
-OpenAPI docs: http://localhost:8000/docs
