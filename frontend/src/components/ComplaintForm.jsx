@@ -3,7 +3,13 @@ import React, { useState } from "react";
 import { submitComplaint } from "../api";
 
 export default function ComplaintForm({ onSubmitted }) {
-  const [form, setForm] = useState({ name: "", email: "", description: "", agency_hint: "" });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phoneNumber: "",
+    description: "",
+    agency_hint: ""
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -17,7 +23,7 @@ export default function ComplaintForm({ onSubmitted }) {
     setError(null);
     try {
       const res = await submitComplaint(form);
-      onSubmitted(res.tracking_id);
+      onSubmitted(res.id || res.tracking_id);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -36,12 +42,16 @@ export default function ComplaintForm({ onSubmitted }) {
         <input name="email" type="email" value={form.email} onChange={handleChange} required />
       </label>
       <label>
+        Your phone number (optional)
+        <input name="phoneNumber" value={form.phoneNumber} onChange={handleChange} />
+      </label>
+      <label>
         Complaint description
         <textarea name="description" rows="5" value={form.description} onChange={handleChange} required />
       </label>
       <label>
-        Agency hint (optional)
-        <input name="agency_hint" value={form.agency_hint} onChange={handleChange} />
+        Agency (e.g. fcc)
+        <input name="agency_hint" value={form.agency_hint} onChange={handleChange} required />
       </label>
       <button type="submit" disabled={loading}>
         {loading ? "Submitting..." : "Submit Complaint"}

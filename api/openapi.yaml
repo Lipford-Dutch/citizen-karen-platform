@@ -48,11 +48,25 @@ components:
   schemas:
     Complaint:
       type: object
-      required: [agency, phoneNumber, description, timestamp]
+      required: [description]
       properties:
         agency:
           type: string
+          description: Normalized agency identifier
+        agency_hint:
+          type: string
+          description: UI-friendly alias for agency
+        agencyHint:
+          type: string
+          description: Camel-case alias for agency_hint
+        name:
+          type: string
+        email:
+          type: string
+          format: email
         phoneNumber:
+          type: string
+        phone_number:
           type: string
         description:
           type: string
@@ -77,4 +91,3 @@ components:
           type: string
         agencyReference:
           type: string
-
