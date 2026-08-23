@@ -6,9 +6,15 @@ React SPA for:
 - Status lookups
 - Future: user accounts, dashboards
 
-Recommended bootstrap:
+## Development
 
 ```bash
 cd frontend
-npx create-react-app . --template typescript
+npm install
+npm start
+```
 
+## Routes
+
+- `/complaints` - Placeholder complaints page
+- `/status-lookup` - Placeholder status lookup page
