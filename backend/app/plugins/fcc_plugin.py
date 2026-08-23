@@ -4,6 +4,17 @@ from .base import AgencyPlugin
 class FccPlugin(AgencyPlugin):
     agency_name = "fcc"
 
+    def matches(self, data: dict) -> bool:
+        return str(data.get("agency", "")).lower() == self.agency_name
+
+    def forward(self, data: dict) -> dict:
+        return {
+            "success": True,
+            "agency_id": self.agency_name.upper(),
+            "agency_response": {},
+            "agency_reference": data.get("reference"),
+        }
+
     async def submit(self, complaint):
         # In PoC, we call a mock FCC endpoint
         async with httpx.AsyncClient() as client:
@@ -24,4 +35,3 @@ class FccPlugin(AgencyPlugin):
             "state": "acknowledged",
             "agency_reference": reference_id,
         }
-

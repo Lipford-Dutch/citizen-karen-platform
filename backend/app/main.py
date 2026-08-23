@@ -42,9 +42,13 @@ async def submit_complaint(complaint: ComplaintIn):
 
     return ComplaintOut(id=cid, received=True, state=record["state"])
 
-@app.get("/complaints/{cid}")
-async def get_status(cid: str):
-    if cid not in complaints_store:
+@app.get("/complaints/{id}")
+async def get_status(id: str):
+    if id not in complaints_store:
         raise HTTPException(status_code=404, detail="Complaint not found")
-    return complaints_store[cid]
-
+    complaint = complaints_store[id]
+    return {
+        "id": complaint["id"],
+        "state": complaint["state"],
+        "agencyReference": complaint.get("agency_reference"),
+    }
