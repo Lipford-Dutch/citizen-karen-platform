@@ -2,8 +2,8 @@
 import React, { useState } from "react";
 import { getStatus } from "../api";
 
-export default function StatusLookup() {
-  const [trackingId, setTrackingId] = useState("");
+export default function StatusLookup({ initialId = "" }) {
+  const [trackingId, setTrackingId] = useState(initialId);
   const [status, setStatus] = useState(null);
   const [error, setError] = useState(null);
 
