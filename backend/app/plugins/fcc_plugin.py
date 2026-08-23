@@ -1,25 +1,43 @@
 import httpx
 from .base import AgencyPlugin
+from ..logging_config import get_logger
+
+logger = get_logger()
+
 
 class FccPlugin(AgencyPlugin):
     agency_name = "fcc"
 
     async def submit(self, complaint):
-        # In PoC, we call a mock FCC endpoint
-        async with httpx.AsyncClient() as client:
-            resp = await client.post(
-                "http://mock-fcc:8001/fcc/robocall",
-                json=complaint,
-                timeout=10,
+        logger.info("fcc_plugin_submit_started", extra={"agency": self.agency_name})
+        try:
+            async with httpx.AsyncClient() as client:
+                resp = await client.post(
+                    "http://mock-fcc:8001/fcc/robocall",
+                    json=complaint,
+                    timeout=10,
+                )
+            data = resp.json()
+            logger.info(
+                "fcc_plugin_submit_succeeded",
+                extra={"agency": self.agency_name, "state": data.get("state")},
             )
-        data = resp.json()
-        return {
-            "state": data.get("state", "submitted"),
-            "agency_reference": data.get("reference"),
-        }
+            return {
+                "state": data.get("state", "submitted"),
+                "agency_reference": data.get("reference"),
+            }
+        except Exception as exc:
+            logger.error(
+                "fcc_plugin_submit_error",
+                extra={"agency": self.agency_name, "error": str(exc)},
+            )
+            raise
 
     async def status(self, reference_id: str):
-        # For PoC, fake an 'acknowledged' state
+        logger.info(
+            "fcc_plugin_status_checked",
+            extra={"agency": self.agency_name, "reference_id": reference_id},
+        )
         return {
             "state": "acknowledged",
             "agency_reference": reference_id,

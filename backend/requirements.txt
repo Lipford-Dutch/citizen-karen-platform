@@ -2,6 +2,7 @@ fastapi
 uvicorn[standard]
 httpx
 pydantic
+json-log-formatter
 mkdocs-callouts
 mkdocs-click
 mkdocs
