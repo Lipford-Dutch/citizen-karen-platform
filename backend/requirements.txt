@@ -2,6 +2,10 @@ fastapi
 uvicorn[standard]
 httpx
 pydantic
+sqlalchemy
+prometheus_client
+json-log-formatter
+psycopg2-binary
 mkdocs-callouts
 mkdocs-click
 mkdocs
