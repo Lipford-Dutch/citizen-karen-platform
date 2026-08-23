@@ -1,19 +1,19 @@
 # backend/app/plugins/base.py
 from abc import ABC, abstractmethod
+from typing import Any, Dict
+
 
 class AgencyPlugin(ABC):
     @abstractmethod
-    def matches(self, data: dict) -> bool:
+    async def submit(self, complaint: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Return True if this plugin should handle the given complaint data.
+        Submit complaint data to the upstream agency.
         """
         pass
 
     @abstractmethod
-    def forward(self, data: dict) -> dict:
+    async def status(self, reference_id: str) -> Dict[str, Any]:
         """
-        Forward the complaint to upstream agency.
-        Return a dict e.g. {'success': True, 'agency_id': 'IRS', 'agency_response': {...}}
-        Raise exceptions on failures.
+        Query status for a previously submitted complaint reference.
         """
         pass
