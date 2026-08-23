@@ -4,6 +4,12 @@ from .base import AgencyPlugin
 class FccPlugin(AgencyPlugin):
     agency_name = "fcc"
 
+    def matches(self, data: dict) -> bool:
+        return data.get("agency", "").lower() == self.agency_name
+
+    def forward(self, data: dict) -> dict:
+        raise NotImplementedError("Use async submit() for FCC plugin submissions.")
+
     async def submit(self, complaint):
         # In PoC, we call a mock FCC endpoint
         async with httpx.AsyncClient() as client:
@@ -24,4 +30,3 @@ class FccPlugin(AgencyPlugin):
             "state": "acknowledged",
             "agency_reference": reference_id,
         }
-
