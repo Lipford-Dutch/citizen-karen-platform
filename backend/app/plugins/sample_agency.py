@@ -1,7 +1,8 @@
 # backend/app/plugins/sample_agency.py
-from .base import AgencyPlugin
 import random
 import time
+
+from .base import AgencyPlugin
 
 
 class SampleAgencyPlugin(AgencyPlugin):

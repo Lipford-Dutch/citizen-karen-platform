@@ -1,10 +1,10 @@
 import json
 import sqlite3
+from collections.abc import Iterator
 from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
 from threading import Lock
-from collections.abc import Iterator
 from typing import Any
 
 from .models import ComplaintState, ComplaintSubmission

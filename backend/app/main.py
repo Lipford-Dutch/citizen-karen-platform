@@ -1,9 +1,9 @@
-from contextlib import asynccontextmanager
-from datetime import datetime
 import os
-from pathlib import Path
 import secrets
 import time
+from contextlib import asynccontextmanager
+from datetime import UTC, datetime
+from pathlib import Path
 from uuid import uuid4
 
 from fastapi import APIRouter, FastAPI, HTTPException, Request, status
@@ -20,7 +20,6 @@ from .models import (
     DeletionResponse,
 )
 from .plugins.registry import get_plugin
-
 
 VERSION = "1.0.0"
 logger = get_logger()
@@ -112,7 +111,7 @@ async def submit_complaint(payload: ComplaintSubmission) -> ComplaintCreated:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     complaint_id = str(uuid4())
-    tracking_id = f"CK-{datetime.now().year}-{secrets.token_hex(3).upper()}"
+    tracking_id = f"CK-{datetime.now(UTC).year}-{secrets.token_hex(3).upper()}"
     record = store.create(
         complaint_id=complaint_id,
         tracking_id=tracking_id,

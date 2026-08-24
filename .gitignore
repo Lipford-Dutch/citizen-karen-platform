@@ -11,8 +11,8 @@ venv/
 .env
 .env.*
 !.env.example
-data/
-backend/data/
+/data/
+/backend/data/
 *.db
 *.sqlite3
 

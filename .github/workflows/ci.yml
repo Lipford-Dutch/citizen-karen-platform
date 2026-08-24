@@ -1,9 +1,10 @@
 name: Release verification
 
-# Deliberately runs only after a merge to main (or by manual dispatch). Local
-# verification is required before PR approval so work-in-progress branches do
-# not consume GitHub Actions or Copilot resources.
+# Pull-request verification is enabled for the final landing stage and future
+# dependency updates. Manual dispatch remains available for release diagnosis.
 on:
+  pull_request:
+    branches: [main]
   push:
     branches: [main]
   workflow_dispatch:
