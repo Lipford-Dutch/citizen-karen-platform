@@ -1,6 +1,6 @@
 # backend/app/metrics.py
-from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 from fastapi import Response
+from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 
 REQUEST_LATENCY = Histogram(
     "request_latency_seconds", "Latency of requests", ["endpoint"]

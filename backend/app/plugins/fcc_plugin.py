@@ -3,9 +3,8 @@ import secrets
 
 import httpx
 
-from .base import AgencyPlugin
 from ..logging_config import get_logger
-
+from .base import AgencyPlugin
 
 logger = get_logger()
 

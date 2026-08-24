@@ -4,9 +4,9 @@ mock_data.py — generate realistic fake complaint payloads for development and 
 No third-party dependencies; uses only the Python standard library.
 """
 
+import datetime
 import random
 import uuid
-import datetime
 
 # ---------------------------------------------------------------------------
 # Seed data
@@ -96,12 +96,18 @@ _AGENCIES = [
 ]
 
 _COMPLAINT_TEMPLATES = [
-    "I am filing a complaint regarding {topic}. The issue has been ongoing for {duration} "
-    "and I have not received any resolution despite multiple attempts to resolve it.",
-    "This complaint concerns {topic}. I believe this is a violation of consumer protection laws "
-    "and requires immediate investigation.",
-    "I would like to report {topic}. The responsible party has failed to address my concerns "
-    "after {duration}.",
+    (
+        "I am filing a complaint regarding {topic}. The issue has been ongoing for {duration} "
+        "and I have not received any resolution despite multiple attempts to resolve it."
+    ),
+    (
+        "This complaint concerns {topic}. I believe this is a violation of consumer protection laws "
+        "and requires immediate investigation."
+    ),
+    (
+        "I would like to report {topic}. The responsible party has failed to address my concerns "
+        "after {duration}."
+    ),
     "Filing a formal complaint about {topic}. I have documentation available upon request.",
     "I am writing to report an ongoing issue with {topic} that has caused me significant harm.",
 ]

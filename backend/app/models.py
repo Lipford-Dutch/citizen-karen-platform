@@ -1,8 +1,7 @@
-from enum import StrEnum
 import re
+from enum import StrEnum
 
 from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
-
 
 CURRENT_CONSENT_VERSION = "2026-08-23"
 SENSITIVE_PATTERNS = (
