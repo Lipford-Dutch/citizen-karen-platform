@@ -2,79 +2,209 @@ openapi: 3.1.0
 info:
   title: Citizen Karen API
   version: 1.0.0
+  description: >
+    API for submitting and tracking citizen complaints against government
+    agencies. Each complaint is routed to the appropriate federal agency
+    plugin for upstream submission.
+  contact:
+    name: Citizen Karen Platform
+    url: https://github.com/Lipford-Dutch/citizen-karen-platform
+  license:
+    name: MIT
 servers:
   - url: http://localhost:8000
+    description: Local development server
 paths:
   /health:
     get:
       summary: Health check
+      operationId: healthCheck
+      tags:
+        - System
       responses:
         '200':
-          description: OK
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
   /complaints:
     post:
-      summary: Submit complaint
+      summary: Submit a complaint
+      description: >
+        Submit a new citizen complaint. The complaint is routed to the
+        appropriate federal agency based on the `agency` field.
       operationId: submitComplaint
+      tags:
+        - Complaints
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Complaint'
+            example:
+              agency: cfpb
+              phoneNumber: "+15551234567"
+              description: "Bank charged undisclosed fees on my mortgage statement."
+              timestamp: "2026-08-23T14:00:00Z"
       responses:
         '201':
-          description: Complaint accepted
+          description: Complaint accepted and queued for submission
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ComplaintResponse'
+        '400':
+          description: Invalid request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /complaints/{id}:
     get:
       summary: Get complaint status
+      description: Retrieve the current status and agency reference for a submitted complaint.
+      operationId: getComplaintStatus
+      tags:
+        - Complaints
       parameters:
         - in: path
           name: id
           required: true
+          description: UUID of the complaint returned at submission time
           schema:
             type: string
+            format: uuid
+            example: "550e8400-e29b-41d4-a716-446655440000"
       responses:
         '200':
-          description: Complaint status
+          description: Current complaint status
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ComplaintStatus'
+        '404':
+          description: Complaint not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     Complaint:
       type: object
-      required: [agency, phoneNumber, description, timestamp]
+      description: Payload for submitting a new citizen complaint.
+      required:
+        - agency
+        - phoneNumber
+        - description
+        - timestamp
       properties:
         agency:
           type: string
+          description: >
+            Identifier for the federal agency to which this complaint should
+            be routed (e.g. `cfpb`, `eeoc`, `ftc`).
+          example: cfpb
         phoneNumber:
           type: string
+          description: Contact phone number of the complainant in E.164 format.
+          pattern: '^\+?[1-9]\d{1,14}$'
+          example: "+15551234567"
         description:
           type: string
+          description: Narrative description of the complaint (10–5000 characters).
+          minLength: 10
+          maxLength: 5000
+          example: "Bank charged undisclosed fees on my mortgage statement."
         timestamp:
           type: string
           format: date-time
+          description: ISO 8601 date-time when the incident occurred or the complaint was composed.
+          example: "2026-08-23T14:00:00Z"
     ComplaintResponse:
       type: object
+      description: Acknowledgement returned immediately after a complaint is accepted.
+      required:
+        - id
+        - received
+        - state
       properties:
         id:
           type: string
+          format: uuid
+          description: Unique identifier assigned to this complaint.
+          example: "550e8400-e29b-41d4-a716-446655440000"
         received:
           type: boolean
+          description: Indicates the complaint was successfully received and stored.
+          example: true
         state:
-          type: string
+          $ref: '#/components/schemas/ComplaintStateEnum'
     ComplaintStatus:
       type: object
+      description: Full status record for a previously submitted complaint.
+      required:
+        - id
+        - state
       properties:
         id:
           type: string
+          format: uuid
+          description: Unique identifier of the complaint.
+          example: "550e8400-e29b-41d4-a716-446655440000"
         state:
-          type: string
+          $ref: '#/components/schemas/ComplaintStateEnum'
         agencyReference:
           type: string
+          description: >
+            Reference number or case ID assigned by the federal agency after
+            upstream submission. May be `null` if the agency has not yet
+            responded.
+          nullable: true
+          example: "CFPB-2026-123456"
+    ComplaintStateEnum:
+      type: string
+      description: Lifecycle state of a complaint.
+      enum:
+        - pending
+        - submitted
+        - acknowledged
+        - under_review
+        - resolved
+        - rejected
+      example: pending
+    ErrorResponse:
+      type: object
+      description: Standard error envelope returned on non-2xx responses.
+      required:
+        - detail
+      properties:
+        detail:
+          type: string
+          description: Human-readable description of the error.
+          example: "Complaint not found"
 
