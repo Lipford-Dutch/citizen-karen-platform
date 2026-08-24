@@ -1,0 +1,17 @@
+.git
+.github
+.playwright-cli
+output
+tmp
+site
+docs
+frontend
+api
+branding
+*.pdf
+*.xlsx
+backend/.venv
+backend/data
+backend/.pytest_cache
+backend/**/__pycache__
+backend/tests

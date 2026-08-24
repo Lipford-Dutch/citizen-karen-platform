@@ -1,0 +1,23 @@
+name: Feature request
+description: Propose an improvement to the citizen experience or platform.
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: Citizen need
+      description: What outcome should become easier, safer, or more accessible?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed approach
+    validations:
+      required: true
+  - type: textarea
+    id: risk
+    attributes:
+      label: Privacy, accessibility, or agency risk
+      description: Note any data, consent, legal, or accessibility implications.

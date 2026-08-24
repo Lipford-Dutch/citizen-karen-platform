@@ -1,6 +1,14 @@
-version: '3.9'
-
 services:
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+
   backend:
     build:
       context: ..
@@ -8,7 +16,12 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - PYTHONUNBUFFERED=1
+      CITIZEN_KAREN_DB_PATH: /app/data/citizen-karen.db
+      CORS_ORIGINS: http://localhost:8080
+      FCC_CONNECTOR_MODE: network
+      FCC_API_URL: http://mock-fcc:8001/fcc/robocall
+    volumes:
+      - complaint-data:/app/data
     depends_on:
       mock-fcc:
         condition: service_healthy
@@ -25,11 +38,12 @@ services:
       dockerfile: infra/Dockerfile.mock-fcc
     ports:
       - "8001:8001"
-    environment:
-      - PYTHONUNBUFFERED=1
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
       interval: 10s
       timeout: 5s
       retries: 3
       start_period: 10s
+
+volumes:
+  complaint-data:

@@ -1,24 +1,38 @@
-### `.gitignore` (Python + Node + common)
-
-```gitignore
 # Python
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
+.pytest_cache/
+.coverage
+coverage.xml
+.venv/
 venv/
+
+# Local runtime data and secrets
 .env
+.env.*
+!.env.example
+data/
+backend/data/
+*.db
+*.sqlite3
 
 # Node
 node_modules/
 dist/
-build/
+coverage/
+*.tsbuildinfo
 
-# IDE
+# Documentation and QA output
+site/
+tmp/
+.playwright-cli/
+output/playwright/
+
+# Editors and operating systems
 .vscode/
 .idea/
 .DS_Store
+Thumbs.db
 
-# Docker
+# Logs
 *.log
-
