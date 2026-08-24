@@ -25,6 +25,8 @@ karing-usa/
 │   │   ├── metrics.py
 │   │   └── main.py
 │   ├── Dockerfile
+│   ├── schema.sql              # PostgreSQL MVP schema (complaints/events/plugins)
+│   ├── migrations/             # SQL migrations
 │   └── requirements.txt
 ├── frontend/               # React SPA for citizen + admin views
 │   ├── public/
