@@ -13,9 +13,9 @@ def test_schema_sql_contains_mvp_tables():
 
 
 def test_initial_migration_contains_mvp_tables():
-    migration_sql = (
-        BACKEND_DIR / "migrations" / "0001_mvp_schema.sql"
-    ).read_text(encoding="utf-8")
+    migration_sql = (BACKEND_DIR / "migrations" / "0001_mvp_schema.sql").read_text(
+        encoding="utf-8"
+    )
 
     assert "CREATE TABLE IF NOT EXISTS complaints" in migration_sql
     assert "CREATE TABLE IF NOT EXISTS events" in migration_sql

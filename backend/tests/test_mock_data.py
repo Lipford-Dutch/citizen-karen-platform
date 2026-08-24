@@ -1,6 +1,5 @@
 """tests/test_mock_data.py — unit tests for the mock data generation utility."""
 
-import pytest
 from app.utils.mock_data import generate_complaint, generate_complaints
 
 
@@ -11,11 +10,19 @@ class TestGenerateComplaint:
 
     def test_required_keys_present(self):
         result = generate_complaint()
-        for key in ("tracking_id", "name", "email", "description", "agency_hint", "timestamp"):
+        for key in (
+            "tracking_id",
+            "name",
+            "email",
+            "description",
+            "agency_hint",
+            "timestamp",
+        ):
             assert key in result, f"Missing key: {key}"
 
     def test_tracking_id_is_uuid(self):
         import uuid
+
         result = generate_complaint()
         # Should not raise
         uuid.UUID(result["tracking_id"])
@@ -26,6 +33,7 @@ class TestGenerateComplaint:
 
     def test_timestamp_format(self):
         import re
+
         result = generate_complaint()
         assert re.match(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", result["timestamp"])
 
@@ -35,6 +43,7 @@ class TestGenerateComplaint:
 
     def test_agency_hint_random_when_not_specified(self):
         from app.utils.mock_data import _AGENCIES
+
         result = generate_complaint()
         assert result["agency_hint"] in _AGENCIES
 

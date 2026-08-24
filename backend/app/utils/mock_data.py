@@ -13,23 +13,75 @@ import datetime
 # ---------------------------------------------------------------------------
 
 _FIRST_NAMES = [
-    "Alice", "Bob", "Carol", "David", "Eve", "Frank", "Grace", "Hank",
-    "Irene", "Jack", "Karen", "Leo", "Maria", "Nathan", "Olivia", "Paul",
-    "Quinn", "Rachel", "Steve", "Tina", "Uma", "Victor", "Wendy", "Xena",
-    "Yusuf", "Zoe",
+    "Alice",
+    "Bob",
+    "Carol",
+    "David",
+    "Eve",
+    "Frank",
+    "Grace",
+    "Hank",
+    "Irene",
+    "Jack",
+    "Karen",
+    "Leo",
+    "Maria",
+    "Nathan",
+    "Olivia",
+    "Paul",
+    "Quinn",
+    "Rachel",
+    "Steve",
+    "Tina",
+    "Uma",
+    "Victor",
+    "Wendy",
+    "Xena",
+    "Yusuf",
+    "Zoe",
 ]
 
 _LAST_NAMES = [
-    "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller",
-    "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez",
-    "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin",
-    "Lee", "Perez", "Thompson", "White", "Harris", "Sanchez", "Clark",
-    "Ramirez", "Lewis", "Robinson",
+    "Smith",
+    "Johnson",
+    "Williams",
+    "Brown",
+    "Jones",
+    "Garcia",
+    "Miller",
+    "Davis",
+    "Rodriguez",
+    "Martinez",
+    "Hernandez",
+    "Lopez",
+    "Gonzalez",
+    "Wilson",
+    "Anderson",
+    "Thomas",
+    "Taylor",
+    "Moore",
+    "Jackson",
+    "Martin",
+    "Lee",
+    "Perez",
+    "Thompson",
+    "White",
+    "Harris",
+    "Sanchez",
+    "Clark",
+    "Ramirez",
+    "Lewis",
+    "Robinson",
 ]
 
 _EMAIL_DOMAINS = [
-    "gmail.com", "yahoo.com", "outlook.com", "hotmail.com",
-    "example.com", "test.org", "mail.net",
+    "gmail.com",
+    "yahoo.com",
+    "outlook.com",
+    "hotmail.com",
+    "example.com",
+    "test.org",
+    "mail.net",
 ]
 
 _AGENCIES = [
@@ -73,14 +125,20 @@ _TOPICS = [
 ]
 
 _DURATIONS = [
-    "two weeks", "a month", "three months", "six months", "over a year",
-    "several days", "more than 90 days",
+    "two weeks",
+    "a month",
+    "three months",
+    "six months",
+    "over a year",
+    "several days",
+    "more than 90 days",
 ]
 
 
 # ---------------------------------------------------------------------------
 # Generator functions
 # ---------------------------------------------------------------------------
+
 
 def _random_name() -> str:
     return f"{random.choice(_FIRST_NAMES)} {random.choice(_LAST_NAMES)}"

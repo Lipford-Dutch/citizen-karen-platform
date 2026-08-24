@@ -3,6 +3,7 @@ from .base import AgencyPlugin
 import random
 import time
 
+
 class SampleAgencyPlugin(AgencyPlugin):
     def matches(self, data: dict) -> bool:
         # Simple example: if complaint has type "sample", handle it
@@ -15,7 +16,7 @@ class SampleAgencyPlugin(AgencyPlugin):
             return {
                 "success": True,
                 "agency_id": "SAMPLE_AGENCY",
-                "agency_response": {"message": "Accepted"}
+                "agency_response": {"message": "Accepted"},
             }
         else:
             raise RuntimeError("Upstream agency unavailable")

@@ -1,6 +1,11 @@
+import os
+import secrets
+
 import httpx
+
 from .base import AgencyPlugin
 from ..logging_config import get_logger
+
 
 logger = get_logger()
 
@@ -8,48 +13,24 @@ logger = get_logger()
 class FccPlugin(AgencyPlugin):
     agency_name = "fcc"
 
-    def matches(self, data: dict) -> bool:
-        return str(data.get("agency", "")).lower() == self.agency_name
+    def __init__(self) -> None:
+        self.mode = os.getenv("FCC_CONNECTOR_MODE", "simulate").lower()
+        self.endpoint = os.getenv("FCC_API_URL", "http://localhost:8001/fcc/robocall")
 
-    def forward(self, data: dict) -> dict:
+    async def submit(self, complaint: dict) -> dict:
+        logger.info("fcc_submission_started", extra={"agency": self.agency_name})
+        if self.mode == "simulate":
+            reference = f"FCC-{secrets.token_hex(3).upper()}"
+            return {"state": "submitted", "agency_reference": reference}
+
+        async with httpx.AsyncClient(timeout=10) as client:
+            response = await client.post(self.endpoint, json=complaint)
+            response.raise_for_status()
+        payload = response.json()
         return {
-            "success": True,
-            "agency_id": self.agency_name.upper(),
-            "agency_response": {},
-            "agency_reference": data.get("reference"),
+            "state": payload.get("state", "submitted"),
+            "agency_reference": payload.get("reference"),
         }
 
-    async def submit(self, complaint):
-        logger.info("fcc_plugin_submit_started", extra={"agency": self.agency_name})
-        try:
-            async with httpx.AsyncClient() as client:
-                resp = await client.post(
-                    "http://mock-fcc:8001/fcc/robocall",
-                    json=complaint,
-                    timeout=10,
-                )
-            data = resp.json()
-            logger.info(
-                "fcc_plugin_submit_succeeded",
-                extra={"agency": self.agency_name, "state": data.get("state")},
-            )
-            return {
-                "state": data.get("state", "submitted"),
-                "agency_reference": data.get("reference"),
-            }
-        except Exception as exc:
-            logger.error(
-                "fcc_plugin_submit_error",
-                extra={"agency": self.agency_name, "error": str(exc)},
-            )
-            raise
-
-    async def status(self, reference_id: str):
-        logger.info(
-            "fcc_plugin_status_checked",
-            extra={"agency": self.agency_name, "reference_id": reference_id},
-        )
-        return {
-            "state": "acknowledged",
-            "agency_reference": reference_id,
-        }
+    async def status(self, reference_id: str) -> dict:
+        return {"state": "submitted", "agency_reference": reference_id}

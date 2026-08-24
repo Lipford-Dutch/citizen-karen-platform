@@ -1,69 +1,43 @@
-site_name: KaringUSA
-site_url: https://www.karingusa.com/
-site_description: Project Citizen Karen documentation with Markdown.
-site_author: Will Lipford
-
-repo_url: https://github.com/Lipford-Dutch/
-edit_uri: blob/master/docs/
+site_name: Citizen Karen
+site_description: Product and engineering documentation for the Citizen Karen civic complaint navigator.
+site_url: https://lipford-dutch.github.io/citizen-karen-platform/
+repo_url: https://github.com/Lipford-Dutch/citizen-karen-platform
+edit_uri: edit/main/docs/
 
 theme:
   name: mkdocs
   color_mode: auto
   user_color_mode_toggle: true
-  locale: en
-  analytics: {gtag: 'G-00000000'}
-  highlightjs: true
-  
 
 nav:
-  - Home: index.md
-  - Getting Started: getting-started.md
-  - User Guide: user-guide/
-  - Developer Guide:
-    - dev-guide/
-    - Developer Setup: DEVELOPER_SETUP.md
-  - About:
-    - Release Notes: about/release-notes.md
-    - Contributing: about/contributing.md
-    - License: about/license.md
+  - Overview: index.md
+  - Developer setup: DEVELOPER_SETUP.md
+  - Release handoff: HANDOFF.md
+  - Product:
+      - Vision: VISION.md
+      - Requirements: BRD_TRD.md
+      - Roadmap: roadmap.md
+      - Project flow: projectflow.md
+  - Trust and safety:
+      - Consent and terms: CONSENT_AND_TERMS.md
+      - Data governance: DATA_GOVERNANCE.md
+      - Legal boundaries: LEGAL_BOUNDARIES.md
+      - Accessibility: ACCESSIBILITY.md
+      - Accessibility audit: ACCESSIBILITY_AUDIT_CHECKLIST.md
+      - Security: SECURITY.md
+  - Engineering:
+      - System architecture: SYSTEM_ARCHITECTURE.md
+      - Agency plugin guide: AGENCY_PLUGIN_GUIDE.md
+      - Observability: OBSERVABILITY.md
 
+markdown_extensions:
+  - attr_list
+  - def_list
+  - tables
+  - toc:
+      permalink: true
 
 exclude_docs: |
   *.py
 
-markdown_extensions:
-  - toc:
-      permalink: 
-  - attr_list
-  - def_list
-  - tables
-  - pymdownx.highlight:
-      use_pygments: false
-  - pymdownx.snippets
-  - pymdownx.superfences
-
-
-copyright: Copyright &copy; 2025 <a href="https://willyd61.github.io">Will Lipford</a>, Maintained by the <a href="/about/release-notes/#maintenance-team">Generals of Chaos MkDocs Team</a>.
-
-
-plugins:
-  - search
-  - redirects:
-      redirect_maps:
-        user-guide/plugins.md: dev-guide/plugins.md
-        user-guide/custom-themes.md: dev-guide/themes.md
-        user-guide/styling-your-docs.md: user-guide/choosing-your-theme.md
-  - autorefs
-  - callouts
-  - literate-nav:
-      nav_file: README.md
-      implicit_index: true
-  - mkdocstrings:
-      handlers:
-        python:
-          options:
-            docstring_section_style: list
-            members_order: source
-            show_root_heading: true
-            show_source: false
-            show_signature_annotations: true
+copyright: Copyright © 2026 Citizen Karen contributors.
