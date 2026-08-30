@@ -1,6 +1,6 @@
 # Release handoff
 
-## Delivered scope — 1.0.0-rc.2 full-scale local demo
+## Delivered scope — 1.0.0-rc.3 full-scale local demo
 
 The release candidate now provides the full interactive vision demo while retaining the original FCC flow and 28-destination directory. The Command Center, dynamic schema-driven intake, Postgres source-of-truth, immutable events, Celery retry/escalation, demo RBAC, evidence controls, observability stack, email capture, and admin walkthrough all run locally from one Compose command.
 

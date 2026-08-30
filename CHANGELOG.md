@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented here.
 
+## 1.0.0-rc.3 — 2026-08-30
+
+### Security
+
+- Updated PyJWT to 2.13.0 to address algorithm-confusion, JWK, SSRF, and denial-of-service advisories.
+- Updated python-multipart to 0.0.31 to address multipart parsing, parameter smuggling, and denial-of-service advisories.
+
+### Verification
+
+- Re-ran backend linting, formatting, typing, tests, and the 90% coverage gate.
+- Re-generated the OpenAPI 3.1 contract and re-validated the strict documentation build.
+
 ## 1.0.0-rc.2 — 2026-08-30
 
 - Upgraded the demo source of truth to Alembic-managed Postgres with immutable state-transition events.

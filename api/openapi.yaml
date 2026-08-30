@@ -3,7 +3,7 @@ info:
   title: Citizen Karen API
   description: Consent-first intake and tracking for civic complaints. Citizen Karen
     is not a government service or legal advice. Demo integrations are simulated.
-  version: 1.0.0-rc.2
+  version: 1.0.0-rc.3
 paths:
   /health:
     get:
