@@ -37,10 +37,13 @@ class AppClient:
 
 @pytest.fixture
 def client(tmp_path, monkeypatch):
+    main._velocity.clear()
     monkeypatch.setattr(main, "store", ComplaintStore(tmp_path / "test.db"))
     monkeypatch.setenv("FCC_CONNECTOR_MODE", "simulate")
     main.store.init()
     yield AppClient()
+    main._velocity.clear()
+    main.store.engine.dispose()
 
 
 @pytest.fixture

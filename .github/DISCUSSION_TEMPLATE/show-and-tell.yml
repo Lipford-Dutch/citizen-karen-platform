@@ -1,0 +1,39 @@
+title: "[Demo feedback] "
+labels: ["discussion: demo"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reviewing the Citizen Karen demonstration. Use synthetic data only. This project is not a government service or legal advice.
+  - type: dropdown
+    id: audience
+    attributes:
+      label: Perspective
+      options:
+        - Citizen or community advocate
+        - Civic-tech practitioner
+        - Government or public-sector professional
+        - Engineer or architect
+        - Accessibility, privacy, or security reviewer
+        - Investor or ecosystem partner
+    validations:
+      required: true
+  - type: textarea
+    id: strongest
+    attributes:
+      label: What worked especially well?
+    validations:
+      required: true
+  - type: textarea
+    id: improve
+    attributes:
+      label: What should become clearer or stronger?
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: I used only synthetic or fully redacted information.
+          required: true

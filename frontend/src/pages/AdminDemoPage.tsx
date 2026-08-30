@@ -1,0 +1,11 @@
+import { Activity, ArrowRight, Database, Mail, ServerCog, ShieldCheck } from "lucide-react";
+import { useEffect, useState } from "react";
+
+import { demoLogin, getAdminOperations } from "../api";
+
+export function AdminDemoPage() {
+  const [counts, setCounts] = useState<Record<string, number>>({});
+  const [error, setError] = useState("");
+  useEffect(() => { demoLogin("admin").then(() => getAdminOperations()).then((result) => setCounts(result.counts)).catch((reason: unknown) => setError(reason instanceof Error ? reason.message : "Admin demo unavailable")); }, []);
+  return <section className="admin-page page-width" aria-labelledby="admin-heading"><header><h1 id="admin-heading">Operations demo</h1><p>A local-only view of queues, plugin reliability, and manual-review paths. All case content is synthetic.</p></header>{error ? <p className="form-error" role="alert">{error}</p> : null}<dl className="admin-stats"><div><Database aria-hidden="true" /><dt>Total seeded cases</dt><dd>{counts.total ?? "—"}</dd></div><div><ServerCog aria-hidden="true" /><dt>Needs attention</dt><dd>{counts.needs_attention ?? "—"}</dd></div><div><Activity aria-hidden="true" /><dt>Retrying</dt><dd>{counts.retrying ?? "—"}</dd></div></dl><div className="admin-links"><a href="http://localhost:3000/d/citizen-karen-overview" target="_blank" rel="noreferrer"><Activity aria-hidden="true" /><strong>Grafana</strong><span>Pre-provisioned platform telemetry</span><ArrowRight aria-hidden="true" /></a><a href="http://localhost:8025" target="_blank" rel="noreferrer"><Mail aria-hidden="true" /><strong>MailHog</strong><span>Captured local confirmation mail</span><ArrowRight aria-hidden="true" /></a><a href="http://localhost:8000/api/docs" target="_blank" rel="noreferrer"><ServerCog aria-hidden="true" /><strong>OpenAPI</strong><span>Interactive 3.1 API contract</span><ArrowRight aria-hidden="true" /></a></div><aside className="demo-disclosure"><ShieldCheck aria-hidden="true" /><div><h2>Architecture-review boundary</h2><p>This surface exposes no production credentials or real agency connection. The failure lab deterministically demonstrates retry, permanent failure, and escalation behavior.</p></div></aside></section>;
+}

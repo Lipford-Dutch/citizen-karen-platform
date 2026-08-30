@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use Citizen Karen in research, teaching, or a civic-tech demonstration, please cite this repository."
+title: "Citizen Karen: Unified Citizen Intake and Action Platform"
+type: software
+version: "1.0.0-rc.2"
+date-released: "2026-08-30"
+authors:
+  - name: "Lipford-Dutch contributors"
+repository-code: "https://github.com/Lipford-Dutch/citizen-karen-platform"
+url: "https://lipford-dutch.github.io/citizen-karen-platform/"
+license: MIT
+keywords:
+  - civic technology
+  - consent
+  - complaint intake
+  - accessibility
+  - observability
+  - government integration
+abstract: >-
+  Citizen Karen is an independent, consent-first civic complaint navigator and
+  local platform demonstration. It is not a government service or legal advice.

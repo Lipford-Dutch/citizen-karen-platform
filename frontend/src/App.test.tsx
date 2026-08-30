@@ -16,7 +16,7 @@ function renderApp(path = "/") {
 
 describe("Citizen Karen app", () => {
   it("renders and filters the official destination directory", () => {
-    renderApp();
+    renderApp("/directory");
 
     expect(screen.getByRole("heading", { name: /one clear path/i })).toBeInTheDocument();
     fireEvent.change(screen.getByRole("searchbox"), { target: { value: "unsafe workplace" } });
@@ -24,7 +24,7 @@ describe("Citizen Karen app", () => {
   });
 
   it("renders the FCC form with explicit consent", () => {
-    renderApp("/file");
+    renderApp("/file/fcc");
 
     expect(screen.getByRole("heading", { name: /tell us what happened/i })).toBeInTheDocument();
     expect(screen.getByRole("checkbox", { name: /authorize citizen karen/i })).toBeRequired();
@@ -32,13 +32,13 @@ describe("Citizen Karen app", () => {
   });
 
   it("has no detectable axe violations on the directory", async () => {
-    const { container } = renderApp();
+    const { container } = renderApp("/directory");
 
     expect(await axe(container)).toHaveNoViolations();
   });
 
   it("has no detectable axe violations on the FCC form", async () => {
-    const { container } = renderApp("/file");
+    const { container } = renderApp("/file/fcc");
 
     expect(await axe(container)).toHaveNoViolations();
   });

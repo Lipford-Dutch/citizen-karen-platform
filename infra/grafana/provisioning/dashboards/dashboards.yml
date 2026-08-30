@@ -1,0 +1,9 @@
+apiVersion: 1
+providers:
+  - name: Citizen Karen
+    folder: Citizen Karen
+    type: file
+    disableDeletion: true
+    editable: false
+    options:
+      path: /var/lib/grafana/dashboards

@@ -2,7 +2,7 @@ def test_health_is_versioned(client):
     response = client.get("/health")
 
     assert response.status_code == 200
-    assert response.json() == {"status": "ok", "version": "1.0.0"}
+    assert response.json() == {"status": "ok", "version": "1.0.0-rc.2"}
     assert response.headers["x-content-type-options"] == "nosniff"
     assert response.headers["x-request-id"]
 
@@ -52,15 +52,15 @@ def test_sensitive_numbers_are_rejected(client, complaint_payload):
     assert "Remove Social Security" in response.text
 
 
-def test_unavailable_direct_connector_points_to_official_portal(
-    client, complaint_payload
-):
+def test_cfpb_mock_connector_is_explicitly_simulated(client, complaint_payload):
     complaint_payload["agency"] = "cfpb"
 
     response = client.post("/api/complaints", json=complaint_payload)
 
-    assert response.status_code == 400
-    assert "official portal" in response.json()["detail"]
+    assert response.status_code == 201
+    assert response.json()["agency_reference"].startswith("CFPB-SIM-")
+    assert "not a government service" in response.json()["disclaimer"]
+    assert "not a government service" in response.headers["x-citizen-karen-disclaimer"]
 
 
 def test_missing_tracking_id_returns_404(client):

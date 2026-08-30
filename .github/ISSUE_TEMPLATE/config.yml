@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Ask a question or propose an idea
+    url: https://github.com/Lipford-Dutch/citizen-karen-platform/discussions
+    about: Use Discussions for questions, ideas, architecture feedback, and demo reactions.
   - name: Report a security vulnerability privately
     url: https://github.com/Lipford-Dutch/citizen-karen-platform/security/advisories/new
     about: Do not disclose vulnerabilities in a public issue.

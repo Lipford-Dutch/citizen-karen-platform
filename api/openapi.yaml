@@ -1,153 +1,655 @@
 openapi: 3.1.0
 info:
   title: Citizen Karen API
-  version: 1.0.0
-  description: Consent-first intake and status tracking for the Day-1 FCC complaint flow.
-  contact:
-    name: Citizen Karen Platform
-    url: https://github.com/Lipford-Dutch/citizen-karen-platform
-  license:
-    name: MIT
-servers:
-  - url: http://localhost:8000
-    description: Local development server
+  description: Consent-first intake and tracking for civic complaints. Citizen Karen
+    is not a government service or legal advice. Demo integrations are simulated.
+  version: 1.0.0-rc.2
 paths:
   /health:
     get:
-      operationId: healthCheck
-      summary: Check service health
-      tags: [System]
+      tags:
+      - System
+      summary: Health
+      operationId: health_health_get
       responses:
-        "200":
-          description: Service is healthy.
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+                title: Response Health Health Get
+  /health/live:
+    get:
+      tags:
+      - System
+      summary: Live
+      operationId: live_health_live_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+                title: Response Live Health Live Get
+  /health/ready:
+    get:
+      tags:
+      - System
+      summary: Ready
+      operationId: ready_health_ready_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+                title: Response Ready Health Ready Get
+  /api/plugins:
+    get:
+      tags:
+      - Agency plugins
+      summary: Plugin Catalog
+      operationId: plugin_catalog_api_plugins_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Plugin Catalog Api Plugins Get
+  /api/plugins/{agency}/schema:
+    get:
+      tags:
+      - Agency plugins
+      summary: Plugin Schema
+      operationId: plugin_schema_api_plugins__agency__schema_get
+      parameters:
+      - name: agency
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Agency
+      responses:
+        '200':
+          description: Successful Response
           content:
             application/json:
               schema:
                 type: object
-                required: [status, version]
-                properties:
-                  status: {type: string, const: ok}
-                  version: {type: string, example: 1.0.0}
+                additionalProperties: true
+                title: Response Plugin Schema Api Plugins  Agency  Schema Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/auth/demo-users:
+    get:
+      tags:
+      - Demo authentication
+      summary: Demo Users
+      operationId: demo_users_api_auth_demo_users_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Demo Users Api Auth Demo Users Get
+  /api/auth/demo/{role}:
+    post:
+      tags:
+      - Demo authentication
+      summary: Demo Login
+      operationId: demo_login_api_auth_demo__role__post
+      parameters:
+      - name: role
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Role
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Demo Login Api Auth Demo  Role  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /api/complaints:
     post:
-      operationId: submitComplaint
-      summary: Submit a consented FCC complaint
-      description: Stores a local receipt, records consent, and sends the complaint through the configured FCC connector.
-      tags: [Complaints]
+      tags:
+      - Complaints
+      summary: Submit Complaint
+      operationId: submit_complaint_api_complaints_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
       requestBody:
         required: true
         content:
           application/json:
-            schema: {$ref: "#/components/schemas/ComplaintSubmission"}
+            schema:
+              $ref: '#/components/schemas/ComplaintSubmission'
       responses:
-        "201":
-          description: Complaint accepted and submitted through the configured connector.
+        '201':
+          description: Successful Response
           content:
             application/json:
-              schema: {$ref: "#/components/schemas/ComplaintCreated"}
-        "400":
-          description: Unsupported agency.
+              schema:
+                $ref: '#/components/schemas/ComplaintCreated'
+        '422':
+          description: Validation Error
           content:
             application/json:
-              schema: {$ref: "#/components/schemas/Error"}
-        "422":
-          description: Consent, privacy, or field validation failed.
-  /api/complaints/{tracking_id}:
-    parameters:
-      - in: path
-        name: tracking_id
-        required: true
-        description: Citizen Karen tracking ID returned after submission.
-        schema: {type: string, pattern: "^CK-[0-9]{4}-[A-F0-9]{6}$", example: CK-2026-8F3A9C}
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
     get:
-      operationId: getComplaintStatus
-      summary: Retrieve a complaint status receipt
-      tags: [Complaints]
+      tags:
+      - Complaints
+      summary: List Cases
+      operationId: list_cases_api_complaints_get
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
       responses:
-        "200":
-          description: Current local receipt and agency reference.
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: {$ref: "#/components/schemas/ComplaintStatus"}
-        "404":
-          description: Tracking ID not found.
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response List Cases Api Complaints Get
+        '422':
+          description: Validation Error
           content:
             application/json:
-              schema: {$ref: "#/components/schemas/Error"}
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/complaints/{tracking_id}:
+    get:
+      tags:
+      - Complaints
+      summary: Get Status
+      operationId: get_status_api_complaints__tracking_id__get
+      parameters:
+      - name: tracking_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Tracking Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComplaintStatus'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
     delete:
-      operationId: deleteComplaintCopy
-      summary: Delete Citizen Karen's stored complaint content
-      description: Redacts the locally stored complaint payload. It does not delete the receiving agency's separate copy.
-      tags: [Privacy]
+      tags:
+      - Privacy
+      summary: Delete Complaint Copy
+      operationId: delete_complaint_copy_api_complaints__tracking_id__delete
+      parameters:
+      - name: tracking_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Tracking Id
       responses:
-        "200":
-          description: Local complaint content deleted.
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: {$ref: "#/components/schemas/DeletionResponse"}
-        "404":
-          description: Tracking ID not found.
+              schema:
+                $ref: '#/components/schemas/DeletionResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/complaints/{tracking_id}/retry:
+    post:
+      tags:
+      - Complaints
+      summary: Retry Complaint
+      operationId: retry_complaint_api_complaints__tracking_id__retry_post
+      parameters:
+      - name: tracking_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Tracking Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Retry Complaint Api Complaints  Tracking Id  Retry
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/complaints/{tracking_id}/escalate:
+    post:
+      tags:
+      - Complaints
+      summary: Escalate Complaint
+      operationId: escalate_complaint_api_complaints__tracking_id__escalate_post
+      parameters:
+      - name: tracking_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Tracking Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Escalate Complaint Api Complaints  Tracking Id  Escalate
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/complaints/{tracking_id}/evidence:
+    post:
+      tags:
+      - Evidence
+      summary: Upload Evidence
+      operationId: upload_evidence_api_complaints__tracking_id__evidence_post
+      parameters:
+      - name: tracking_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Tracking Id
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_upload_evidence_api_complaints__tracking_id__evidence_post'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Upload Evidence Api Complaints  Tracking Id  Evidence
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/kyc/check/{agency}:
+    get:
+      tags:
+      - Safety controls
+      summary: Kyc Check
+      operationId: kyc_check_api_kyc_check__agency__get
+      parameters:
+      - name: agency
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Agency
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Kyc Check Api Kyc Check  Agency  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/admin/operations:
+    get:
+      tags:
+      - Admin demo
+      summary: Admin Operations
+      operationId: admin_operations_api_admin_operations_get
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Admin Operations Api Admin Operations Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /metrics:
+    get:
+      summary: Metrics
+      operationId: metrics_metrics_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
 components:
   schemas:
-    ComplaintSubmission:
-      type: object
-      additionalProperties: false
-      required: [agency, full_name, email, complaint_type, description, consent]
+    Body_upload_evidence_api_complaints__tracking_id__evidence_post:
       properties:
-        agency: {type: string, const: fcc}
-        full_name: {type: string, minLength: 2, maxLength: 120, example: Alex Citizen}
-        email: {type: string, format: email, example: alex@example.com}
-        phone_number: {type: [string, "null"], maxLength: 32, example: "+15555551234"}
-        complaint_type: {type: string, minLength: 3, maxLength: 120, example: Unwanted calls or texts}
+        evidence:
+          type: string
+          contentMediaType: application/octet-stream
+          title: Evidence
+      type: object
+      required:
+      - evidence
+      title: Body_upload_evidence_api_complaints__tracking_id__evidence_post
+    ComplaintCreated:
+      properties:
+        id:
+          type: string
+          title: Id
+        tracking_id:
+          type: string
+          title: Tracking Id
+        received:
+          type: boolean
+          title: Received
+          default: true
+        state:
+          $ref: '#/components/schemas/ComplaintState'
+        agency:
+          type: string
+          title: Agency
+        agency_reference:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Agency Reference
+        submitted_at:
+          type: string
+          title: Submitted At
+        disclaimer:
+          type: string
+          title: Disclaimer
+          default: Citizen Karen is not a government service or legal advice. Demo
+            agency interactions are simulated unless explicitly identified.
+      type: object
+      required:
+      - id
+      - tracking_id
+      - state
+      - agency
+      - submitted_at
+      title: ComplaintCreated
+    ComplaintState:
+      type: string
+      enum:
+      - received
+      - submitted
+      - acknowledged
+      - under_review
+      - resolved
+      - rejected
+      - retrying
+      - needs_attention
+      - escalated
+      - deleted
+      title: ComplaintState
+    ComplaintStatus:
+      properties:
+        id:
+          type: string
+          title: Id
+        tracking_id:
+          type: string
+          title: Tracking Id
+        state:
+          $ref: '#/components/schemas/ComplaintState'
+        agency:
+          type: string
+          title: Agency
+        agency_reference:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Agency Reference
+        complaint_type:
+          type: string
+          title: Complaint Type
+        submitted_at:
+          type: string
+          title: Submitted At
+        last_updated:
+          type: string
+          title: Last Updated
+        consent_version:
+          type: string
+          title: Consent Version
+        events:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Events
+        retry_count:
+          type: integer
+          title: Retry Count
+          default: 0
+        next_action_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Next Action At
+        disclaimer:
+          type: string
+          title: Disclaimer
+          default: Citizen Karen is not a government service or legal advice. Demo
+            agency interactions are simulated unless explicitly identified.
+      type: object
+      required:
+      - id
+      - tracking_id
+      - state
+      - agency
+      - complaint_type
+      - submitted_at
+      - last_updated
+      - consent_version
+      title: ComplaintStatus
+    ComplaintSubmission:
+      properties:
+        agency:
+          type: string
+          pattern: ^[a-z0-9_-]{2,40}$
+          title: Agency
+          default: fcc
+        full_name:
+          type: string
+          maxLength: 120
+          minLength: 2
+          title: Full Name
+        email:
+          type: string
+          format: email
+          title: Email
+        phone_number:
+          anyOf:
+          - type: string
+            maxLength: 32
+          - type: 'null'
+          title: Phone Number
+        complaint_type:
+          type: string
+          maxLength: 120
+          minLength: 3
+          title: Complaint Type
         description:
           type: string
-          minLength: 20
           maxLength: 4000
-          description: Do not include Social Security or payment card numbers.
-        consent: {type: boolean, const: true}
-        consent_version: {type: string, const: "2026-08-23"}
+          minLength: 20
+          title: Description
+        consent:
+          type: boolean
+          title: Consent
+        consent_version:
+          type: string
+          maxLength: 32
+          title: Consent Version
+          default: '2026-08-23'
         website:
           type: string
           maxLength: 0
-          description: Anti-bot honeypot; leave empty.
-    ComplaintCreated:
-      allOf:
-        - {$ref: "#/components/schemas/ComplaintStatusBase"}
-        - type: object
-          required: [received]
-          properties:
-            received: {type: boolean, const: true}
-    ComplaintStatus:
-      allOf:
-        - {$ref: "#/components/schemas/ComplaintStatusBase"}
-        - type: object
-          required: [complaint_type, last_updated, consent_version]
-          properties:
-            complaint_type: {type: string}
-            last_updated: {type: string, format: date-time}
-            consent_version: {type: string}
-    ComplaintStatusBase:
+          title: Website
+          default: ''
+        dynamic_fields:
+          additionalProperties:
+            anyOf:
+            - type: string
+            - type: boolean
+            - type: integer
+            - type: number
+            - type: 'null'
+          type: object
+          title: Dynamic Fields
       type: object
-      required: [id, tracking_id, state, agency, submitted_at]
-      properties:
-        id: {type: string, format: uuid}
-        tracking_id: {type: string, example: CK-2026-8F3A9C}
-        state: {$ref: "#/components/schemas/ComplaintState"}
-        agency: {type: string, const: fcc}
-        agency_reference: {type: [string, "null"], example: FCC-A1B2C3}
-        submitted_at: {type: string, format: date-time}
-    ComplaintState:
-      type: string
-      enum: [received, submitted, acknowledged, under_review, resolved, rejected, deleted]
+      required:
+      - full_name
+      - email
+      - complaint_type
+      - description
+      - consent
+      title: ComplaintSubmission
     DeletionResponse:
-      type: object
-      required: [tracking_id, state, message]
       properties:
-        tracking_id: {type: string}
-        state: {type: string, const: deleted}
-        message: {type: string}
-    Error:
+        tracking_id:
+          type: string
+          title: Tracking Id
+        state:
+          $ref: '#/components/schemas/ComplaintState'
+          default: deleted
+        message:
+          type: string
+          title: Message
+          default: Citizen Karen's stored complaint copy has been deleted.
       type: object
-      required: [detail]
+      required:
+      - tracking_id
+      title: DeletionResponse
+    HTTPValidationError:
       properties:
-        detail: {type: string}
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError

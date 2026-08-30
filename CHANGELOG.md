@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented here.
 
+## 1.0.0-rc.2 — 2026-08-30
+
+- Upgraded the demo source of truth to Alembic-managed Postgres with immutable state-transition events.
+- Added Redis and Celery submission, polling, exponential retry, escalation, and scheduled retention workflows.
+- Expanded the plugin registry to eight explicitly simulated integrations with registry-owned dynamic forms and risk declarations.
+- Added demo roles, evidence handling and scan stubs, rate and velocity controls, KYC-lite declarations, and confirmation-email capture.
+- Added the Citizen Command Center, admin walkthrough, enhanced directory, case evidence, and audit-trail experiences.
+- Added Prometheus, Grafana, OpenTelemetry, MailHog, deterministic seed data, and health/readiness gates to the one-command Compose stack.
+- Published a screenshot-led GitHub Pages showcase, refreshed repository governance and community surfaces, and consolidated Pages deployment.
+- Raised backend coverage above 90%, retained automated accessibility checks, and documented honest production blockers.
+
 ## 1.0.0-rc.1 — 2026-08-24
 
 - Rebuilt the frontend as a responsive React and TypeScript civic wayfinding experience.

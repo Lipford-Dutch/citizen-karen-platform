@@ -31,7 +31,12 @@ jobs:
       - run: python -m pip install -r requirements.txt -r requirements-dev.txt
       - run: python -m ruff check .
       - run: python -m ruff format --check .
+      - run: python -m mypy app --ignore-missing-imports
       - run: python -m pytest --cov=app --cov-fail-under=90
+      - name: Verify the checked-in OpenAPI contract
+        run: |
+          python ../scripts/export_openapi.py
+          git diff --exit-code ../api/openapi.yaml
 
   frontend:
     runs-on: ubuntu-latest
@@ -56,3 +61,14 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - run: docker compose -f infra/docker-compose.yml config --quiet
+
+  documentation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+          cache: pip
+      - run: python -m pip install -r requirements-docs.txt
+      - run: python -m mkdocs build --strict
