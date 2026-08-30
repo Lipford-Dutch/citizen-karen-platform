@@ -17,6 +17,9 @@ class ComplaintState(StrEnum):
     UNDER_REVIEW = "under_review"
     RESOLVED = "resolved"
     REJECTED = "rejected"
+    RETRYING = "retrying"
+    NEEDS_ATTENTION = "needs_attention"
+    ESCALATED = "escalated"
     DELETED = "deleted"
 
 
@@ -30,6 +33,9 @@ class ComplaintSubmission(BaseModel):
     consent: bool
     consent_version: str = Field(default=CURRENT_CONSENT_VERSION, max_length=32)
     website: str = Field(default="", max_length=0, exclude=True)
+    dynamic_fields: dict[str, str | bool | int | float | None] = Field(
+        default_factory=dict
+    )
 
     @field_validator("full_name", "complaint_type", "description", mode="before")
     @classmethod
@@ -59,6 +65,10 @@ class ComplaintCreated(BaseModel):
     agency: str
     agency_reference: str | None = None
     submitted_at: str
+    disclaimer: str = (
+        "Citizen Karen is not a government service or legal advice. Demo agency "
+        "interactions are simulated unless explicitly identified."
+    )
 
 
 class ComplaintStatus(BaseModel):
@@ -71,6 +81,13 @@ class ComplaintStatus(BaseModel):
     submitted_at: str
     last_updated: str
     consent_version: str
+    events: list[dict] = Field(default_factory=list)
+    retry_count: int = 0
+    next_action_at: str | None = None
+    disclaimer: str = (
+        "Citizen Karen is not a government service or legal advice. Demo agency "
+        "interactions are simulated unless explicitly identified."
+    )
 
 
 class DeletionResponse(BaseModel):

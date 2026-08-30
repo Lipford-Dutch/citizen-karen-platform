@@ -1,5 +1,22 @@
 # System Architecture — Citizen Karen / Karing USA
 
+## Full-scale local demo topology (1.0.0-rc.2)
+
+```text
+Browser → nginx SPA/reverse proxy → FastAPI → Postgres source of truth
+                                      ├──→ Redis → Celery worker/scheduler
+                                      │              └──→ plugin registry
+                                      ├──→ MailHog
+                                      └──→ Prometheus + OTel → Grafana
+```
+
+The plugin manifest is the only capability catalog. It owns dynamic form schema,
+risk/KYC metadata, automation boundaries, official URL, submission, polling, and
+escalation behavior. API routes do not contain agency-specific form logic.
+
+Compose uses Alembic-managed Postgres. SQLite remains an isolated development and
+test fallback behind the same repository interface; it is not the demo source of truth.
+
 ## 🎯 Purpose
 
 This document describes the overall architecture of the Citizen Karen platform: core components, data flow, module/plugin framework, and infrastructure considerations.

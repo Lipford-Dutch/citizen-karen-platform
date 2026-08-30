@@ -1,0 +1,19 @@
+{
+  "annotations": {"list": []},
+  "editable": false,
+  "panels": [
+    {"type":"stat","title":"API requests","id":1,"gridPos":{"h":8,"w":6,"x":0,"y":0},"targets":[{"expr":"sum(request_count_total)","refId":"A"}]},
+    {"type":"timeseries","title":"Request latency p95","id":2,"gridPos":{"h":8,"w":9,"x":6,"y":0},"targets":[{"expr":"histogram_quantile(0.95, sum(rate(request_latency_seconds_bucket[5m])) by (le))","refId":"A"}]},
+    {"type":"timeseries","title":"Plugin outcomes","id":3,"gridPos":{"h":8,"w":9,"x":15,"y":0},"targets":[{"expr":"sum by (agency,status) (rate(agency_submission_total[5m]))","refId":"A"}]},
+    {"type":"stat","title":"Queue depth","id":4,"gridPos":{"h":7,"w":6,"x":0,"y":8},"targets":[{"expr":"celery_queue_depth","refId":"A"}]},
+    {"type":"timeseries","title":"Task outcomes","id":5,"gridPos":{"h":7,"w":9,"x":6,"y":8},"targets":[{"expr":"sum by (task,status) (rate(celery_task_total[5m]))","refId":"A"}]},
+    {"type":"timeseries","title":"Evidence scans","id":6,"gridPos":{"h":7,"w":9,"x":15,"y":8},"targets":[{"expr":"sum by (status) (increase(evidence_scan_total[1h]))","refId":"A"}]}
+  ],
+  "schemaVersion": 41,
+  "tags": ["citizen-karen", "demo"],
+  "templating": {"list": []},
+  "time": {"from": "now-1h", "to": "now"},
+  "title": "Citizen Karen Platform Overview",
+  "uid": "citizen-karen-overview",
+  "version": 1
+}

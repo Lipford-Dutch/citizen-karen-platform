@@ -29,9 +29,16 @@ const categoryIcons = {
 } satisfies Record<AgencyCategory, typeof ShieldCheck>;
 
 const featuredSlugs = new Set(["fcc", "cfpb", "doj-civil-rights", "osha", "epa", "ftc"]);
+const demoPlugins = new Map([
+  ["fcc", { risk: "Moderate", score: 44 }],
+  ["cfpb", { risk: "Elevated", score: 71 }],
+  ["epa", { risk: "Moderate", score: 48 }],
+  ["ftc", { risk: "Elevated", score: 62 }],
+]);
 
 function DestinationLink({ agency }: { agency: AgencyDestination }) {
   const Icon = categoryIcons[agency.category];
+  const demo = demoPlugins.get(agency.slug);
   const content = (
     <>
       <span className="destination-icon" aria-hidden="true">
@@ -41,8 +48,9 @@ function DestinationLink({ agency }: { agency: AgencyDestination }) {
         <strong>{agency.title}</strong>
         <span>{agency.description}</span>
         <small>{agency.agency}</small>
+        {demo ? <small className="risk-label">Demo plugin · {demo.risk} risk ({demo.score}/100)</small> : null}
       </span>
-      {agency.direct ? (
+      {demo ? (
         <ArrowRight className="destination-arrow" aria-hidden="true" />
       ) : (
         <ExternalLink className="destination-arrow" aria-hidden="true" />
@@ -50,10 +58,10 @@ function DestinationLink({ agency }: { agency: AgencyDestination }) {
     </>
   );
 
-  return agency.direct ? (
-    <Link className="destination-row" to="/file">
+  return demo ? (
+    <Link className="destination-row" to={`/file?agency=${agency.slug}`}>
       {content}
-      <span className="sr-only">File inside Citizen Karen</span>
+      <span className="sr-only">Open the explicitly simulated Citizen Karen demo flow</span>
     </Link>
   ) : (
     <a
@@ -93,8 +101,8 @@ export function DirectoryPage() {
         <div className="hero-copy">
           <h1 id="directory-heading">One clear path to the right public agency.</h1>
           <p>
-            Find the official destination, file an FCC complaint, or pick up where
-            you left off.
+            Search 28 official destinations or explore an explicitly simulated demo
+            filing flow.
           </p>
           <form className="agency-search" role="search" onSubmit={handleSearch}>
             <label className="sr-only" htmlFor="agency-query">
@@ -178,7 +186,7 @@ export function DirectoryPage() {
             <strong>Clear consent. Minimal data. Official destinations.</strong>
             <span>
               You’re in control. We collect only what is needed for direct filing and
-              route every other issue to an official agency website.
+              clearly label simulated integrations and link to official agency websites.
             </span>
           </div>
           <Link to="/privacy">

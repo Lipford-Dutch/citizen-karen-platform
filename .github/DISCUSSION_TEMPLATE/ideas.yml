@@ -1,0 +1,28 @@
+title: "[Idea] "
+labels: ["discussion: idea"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Citizen Karen is not a government service or legal advice. Do not include complaint content, tracking identifiers, or personal information.
+  - type: textarea
+    id: citizen-need
+    attributes:
+      label: Citizen need
+      description: What civic outcome should become clearer, safer, or more accessible?
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Proposed direction
+      description: Describe the experience or platform change without assuming an unsupported agency API.
+    validations:
+      required: true
+  - type: textarea
+    id: boundaries
+    attributes:
+      label: Consent, privacy, accessibility, and agency boundaries
+      description: What risks or safeguards should maintainers consider?
+    validations:
+      required: true

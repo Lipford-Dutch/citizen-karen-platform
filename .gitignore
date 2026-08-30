@@ -27,6 +27,8 @@ site/
 tmp/
 .playwright-cli/
 output/playwright/
+playwright-report/
+test-results/
 
 # Editors and operating systems
 .vscode/

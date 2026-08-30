@@ -1,49 +1,189 @@
+name: citizen-karen-demo
+
+x-backend-environment: &backend-environment
+  DATABASE_URL: postgresql+psycopg://citizen_karen:local_demo_only@postgres:5432/citizen_karen
+  REDIS_URL: redis://redis:6379/0
+  JWT_SECRET: local-demo-secret-not-for-production
+  DEMO_MODE: "true"
+  ASYNC_SUBMISSIONS: "true"
+  CORS_ORIGINS: http://localhost:8080
+  FCC_CONNECTOR_MODE: network
+  FCC_API_URL: http://mock-fcc:8001/fcc/robocall
+  OTEL_SERVICE_NAME: citizen-karen-api
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+  SMTP_HOST: mailhog
+  SMTP_PORT: "1025"
+
 services:
   frontend:
     build:
       context: ../frontend
       dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
+    ports: ["8080:8080"]
     depends_on:
       backend:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/healthz >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     build:
       context: ..
       dockerfile: infra/Dockerfile.backend
-    ports:
-      - "8000:8000"
-    environment:
-      CITIZEN_KAREN_DB_PATH: /app/data/citizen-karen.db
-      CORS_ORIGINS: http://localhost:8080
-      FCC_CONNECTOR_MODE: network
-      FCC_API_URL: http://mock-fcc:8001/fcc/robocall
-    volumes:
-      - complaint-data:/app/data
+    ports: ["8000:8000"]
+    environment: *backend-environment
     depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
       mock-fcc:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/ready')"]
       interval: 10s
       timeout: 5s
-      retries: 3
-      start_period: 10s
+      retries: 8
+      start_period: 20s
+
+  worker:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.backend
+    command: ["celery", "-A", "app.celery_app:celery_app", "worker", "--loglevel=INFO", "--concurrency=2"]
+    environment:
+      <<: *backend-environment
+      OTEL_SERVICE_NAME: citizen-karen-worker
+    depends_on:
+      backend:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A app.celery_app:celery_app inspect ping -d celery@$$HOSTNAME | grep -q pong"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+
+  scheduler:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.backend
+    command: ["celery", "-A", "app.celery_app:celery_app", "beat", "--loglevel=INFO"]
+    environment: *backend-environment
+    depends_on:
+      worker:
+        condition: service_healthy
+
+  seed:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.backend
+    command: ["python", "-m", "app.seed"]
+    environment: *backend-environment
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: "no"
+
+  postgres:
+    image: postgres:18.3-alpine
+    environment:
+      POSTGRES_DB: citizen_karen
+      POSTGRES_USER: citizen_karen
+      POSTGRES_PASSWORD: local_demo_only
+    ports: ["5432:5432"]
+    volumes: ["postgres-data:/var/lib/postgresql"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U citizen_karen -d citizen_karen"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:8.6-alpine
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory-policy", "noeviction"]
+    ports: ["6379:6379"]
+    volumes: ["redis-data:/data"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   mock-fcc:
     build:
       context: ..
       dockerfile: infra/Dockerfile.mock-fcc
-    ports:
-      - "8001:8001"
+    ports: ["8001:8001"]
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
       interval: 10s
       timeout: 5s
+      retries: 5
+
+  prometheus:
+    image: prom/prometheus:v3.10.0
+    command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.retention.time=7d"]
+    ports: ["9090:9090"]
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9090/-/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  grafana:
+    image: grafana/grafana:12.4.1
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: demo-admin
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+    ports: ["3000:3000"]
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/health | grep -q ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    ports: ["1025:1025", "8025:8025"]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8025"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  otel-collector:
+    image: otel/opentelemetry-collector:0.148.0
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes: ["./otel-collector.yml:/etc/otelcol/config.yaml:ro"]
+    ports: ["4317:4317", "4318:4318"]
+    healthcheck:
+      test: ["CMD", "/otelcol", "components"]
+      interval: 20s
+      timeout: 10s
       retries: 3
-      start_period: 10s
 
 volumes:
-  complaint-data:
+  postgres-data:
+  redis-data:
+  prometheus-data:
+  grafana-data:

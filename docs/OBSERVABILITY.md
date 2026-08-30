@@ -8,6 +8,11 @@ This document outlines what metrics, logs, and monitoring are collected, how to 
 
 ### ✅ Core Metrics & Signals
 
+The local demo provisions the `Citizen Karen Platform Overview` dashboard automatically.
+FastAPI and SQLAlchemy emit OTel traces to the local Collector debug exporter; Prometheus
+scrapes bounded-cardinality HTTP, agency, task, queue, and evidence-scan metrics. No
+tracking ID, identity field, complaint narrative, evidence name, or token is a metric label.
+
 | Signal Type | Metric / Data | Purpose |
 |-------------|---------------|---------|
 | Traffic / Load | `http_requests_total` (rate) | Monitor API usage, submission volume, load spikes |

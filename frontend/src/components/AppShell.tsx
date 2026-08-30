@@ -1,4 +1,4 @@
-import { Menu, X } from "lucide-react";
+import { FlaskConical, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 
@@ -7,10 +7,11 @@ import { ScrollToTop } from "./ScrollToTop";
 
 
 const navigation = [
-  { label: "Find an agency", to: "/" },
-  { label: "File with FCC", to: "/file" },
+  { label: "Command Center", to: "/" },
+  { label: "Find an agency", to: "/directory" },
+  { label: "File a complaint", to: "/file" },
   { label: "Track a case", to: "/track" },
-  { label: "Privacy", to: "/privacy" },
+  { label: "Admin demo", to: "/admin" },
 ];
 
 export function AppShell() {
@@ -54,6 +55,7 @@ export function AppShell() {
               </NavLink>
             ))}
           </nav>
+          <span className="demo-mode"><FlaskConical aria-hidden="true" /> Demo mode</span>
         </div>
       </header>
 
@@ -75,6 +77,7 @@ export function AppShell() {
               GitHub
             </a>
           </nav>
+          <strong className="footer-disclaimer">Not a government service or legal advice.</strong>
           <Link className="footer-brand" to="/" aria-label="Citizen Karen home">
             <img src={brandMark} alt="" width="68" height="48" />
             <span>
