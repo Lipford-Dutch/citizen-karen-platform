@@ -41,7 +41,7 @@ from .observability import configure_observability
 from .plugins.base import DISCLAIMER
 from .plugins.registry import get_plugin, list_plugins
 
-VERSION = "1.0.0-rc.2"
+VERSION = "1.0.0-rc.3"
 logger = get_logger()
 store = ComplaintStore(
     os.getenv("DATABASE_URL")

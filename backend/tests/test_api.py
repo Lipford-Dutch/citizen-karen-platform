@@ -2,7 +2,7 @@ def test_health_is_versioned(client):
     response = client.get("/health")
 
     assert response.status_code == 200
-    assert response.json() == {"status": "ok", "version": "1.0.0-rc.2"}
+    assert response.json() == {"status": "ok", "version": "1.0.0-rc.3"}
     assert response.headers["x-content-type-options"] == "nosniff"
     assert response.headers["x-request-id"]
 

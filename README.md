@@ -14,7 +14,7 @@ Citizen Karen is a consent-first civic complaint navigator and unified intake-pl
 > [!IMPORTANT]
 > This repository is an interactive engineering demo, not a government service or legal advice. No production agency credentials or endpoints are included. FCC uses the repository mock; IRS, FTC, EPA, CFPB, State DMV, Benefits, and Failure Lab are high-fidelity local simulations. Do not deploy the demo to the public internet or use real complaint data.
 
-**Current release:** `1.0.0-rc.2` — a stakeholder-ready local demonstration, not a production authorization.
+**Current release:** `1.0.0-rc.3` — a stakeholder-ready local demonstration, not a production authorization.
 
 ## What works
 

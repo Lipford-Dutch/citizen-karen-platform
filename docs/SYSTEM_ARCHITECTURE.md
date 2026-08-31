@@ -1,6 +1,6 @@
 # System Architecture — Citizen Karen / Karing USA
 
-## Full-scale local demo topology (1.0.0-rc.2)
+## Full-scale local demo topology (1.0.0-rc.3)
 
 ```text
 Browser → nginx SPA/reverse proxy → FastAPI → Postgres source of truth

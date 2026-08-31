@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use Citizen Karen in research, teaching, or a civic-tech demonstration, please cite this repository."
 title: "Citizen Karen: Unified Citizen Intake and Action Platform"
 type: software
-version: "1.0.0-rc.2"
+version: "1.0.0-rc.3"
 date-released: "2026-08-30"
 authors:
   - name: "Lipford-Dutch contributors"
