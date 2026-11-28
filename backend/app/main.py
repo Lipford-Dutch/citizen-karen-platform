@@ -1,4 +1,3 @@
-import os
 import secrets
 import time
 from collections import defaultdict, deque
@@ -19,8 +18,11 @@ from fastapi import (
     status,
 )
 from fastapi.middleware.cors import CORSMiddleware
+from redis import Redis
+from redis.exceptions import RedisError
 
 from .auth import DEMO_USERS, issue_demo_token, optional_user, require_admin
+from .config import settings
 from .db import ComplaintStore, EvidenceRecord
 from .logging_config import get_logger
 from .metrics import (
@@ -43,13 +45,7 @@ from .plugins.registry import get_plugin, list_plugins
 
 VERSION = "1.0.0-rc.3"
 logger = get_logger()
-store = ComplaintStore(
-    os.getenv("DATABASE_URL")
-    or os.getenv(
-        "CITIZEN_KAREN_DB_PATH",
-        str(Path(__file__).resolve().parents[1] / "data" / "citizen-karen.db"),
-    )
-)
+store = ComplaintStore(settings.resolved_database_url)
 _velocity: dict[str, deque[float]] = defaultdict(deque)
 
 
@@ -73,13 +69,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-allowed_origins = [
-    origin.strip()
-    for origin in os.getenv(
-        "CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"
-    ).split(",")
-    if origin.strip()
-]
+allowed_origins = [origin for origin in settings.allowed_origins]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
@@ -130,13 +120,40 @@ def live() -> dict[str, str]:
     return {"status": "alive"}
 
 
+def _broker_ready() -> bool:
+    try:
+        client = Redis.from_url(
+            settings.redis_url,
+            socket_connect_timeout=1,
+            socket_timeout=1,
+        )
+        try:
+            return bool(client.ping())
+        finally:
+            client.close()
+    except (RedisError, OSError, ValueError):
+        return False
+
+
 @app.get("/health/ready", tags=["System"])
 def ready() -> dict[str, str]:
     if not store.ready():
         raise HTTPException(
             status_code=503, detail="Source-of-truth database unavailable"
         )
-    return {"status": "ready", "database": "connected"}
+    broker_status = "not_required"
+    if settings.async_submissions:
+        if not _broker_ready():
+            raise HTTPException(
+                status_code=503, detail="Required Redis broker unavailable"
+            )
+        broker_status = "connected"
+    return {
+        "status": "ready",
+        "database": "connected",
+        "broker": broker_status,
+        "configuration": "valid",
+    }
 
 
 @router.get("/plugins", tags=["Agency plugins"])
@@ -168,7 +185,7 @@ def plugin_schema(agency: str) -> dict[str, Any]:
 
 @router.get("/auth/demo-users", tags=["Demo authentication"])
 def demo_users() -> dict[str, Any]:
-    if os.getenv("DEMO_MODE", "true").lower() != "true":
+    if not settings.demo_mode:
         raise HTTPException(status_code=404, detail="Demo mode disabled")
     return {"users": list(DEMO_USERS.values()), "disclaimer": DISCLAIMER}
 
@@ -184,7 +201,7 @@ def _check_velocity(request: Request) -> None:
     window = _velocity[key]
     while window and now - window[0] > 60:
         window.popleft()
-    limit = int(os.getenv("SUBMISSION_RATE_LIMIT_PER_MINUTE", "5"))
+    limit = settings.submission_rate_limit_per_minute
     if len(window) >= limit:
         raise HTTPException(status_code=429, detail="Submission rate limit exceeded")
     window.append(now)
@@ -216,7 +233,7 @@ async def submit_complaint(
         submission=payload,
         owner_id=user.get("sub") if user else None,
     )
-    if os.getenv("ASYNC_SUBMISSIONS", "false").lower() == "true":
+    if settings.async_submissions:
         from .metrics import QUEUE_DEPTH
         from .tasks import submit_complaint_task
 
@@ -313,7 +330,7 @@ def retry_complaint(tracking_id: str) -> dict[str, Any]:
         event_type="manual_retry_requested",
         increment_retry=True,
     )
-    if os.getenv("ASYNC_SUBMISSIONS", "false").lower() == "true":
+    if settings.async_submissions:
         from .tasks import submit_complaint_task
 
         submit_complaint_task.delay(normalized)

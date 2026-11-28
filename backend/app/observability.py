@@ -1,5 +1,3 @@
-import os
-
 from fastapi import FastAPI
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
@@ -10,14 +8,14 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from sqlalchemy import Engine
 
+from .config import settings
+
 
 def configure_observability(app: FastAPI, engine: Engine) -> None:
-    endpoint = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
+    endpoint = settings.otel_exporter_otlp_endpoint
     if endpoint:
         provider = TracerProvider(
-            resource=Resource.create(
-                {"service.name": os.getenv("OTEL_SERVICE_NAME", "citizen-karen-api")}
-            )
+            resource=Resource.create({"service.name": settings.otel_service_name})
         )
         provider.add_span_processor(
             BatchSpanProcessor(OTLPSpanExporter(endpoint=f"{endpoint}/v1/traces"))

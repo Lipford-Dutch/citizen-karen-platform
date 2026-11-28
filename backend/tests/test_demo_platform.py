@@ -1,5 +1,7 @@
 import io
 
+from redis.exceptions import RedisError
+
 from app import auth, main
 
 
@@ -26,6 +28,25 @@ def test_liveness_readiness_and_plugin_contract(client):
     assert client.get("/api/plugins/unknown/schema").status_code == 404
 
 
+def test_readiness_degrades_when_required_broker_is_unavailable(client, monkeypatch):
+    class UnavailableRedis:
+        def ping(self):
+            raise RedisError("offline")
+
+        def close(self):
+            pass
+
+    monkeypatch.setattr(main.settings, "async_submissions", True)
+    monkeypatch.setattr(
+        main.Redis, "from_url", lambda *args, **kwargs: UnavailableRedis()
+    )
+
+    response = client.get("/health/ready")
+    assert response.status_code == 503
+    assert response.json()["detail"] == "Required Redis broker unavailable"
+    assert client.get("/health/live").json() == {"status": "alive"}
+
+
 def test_demo_auth_roles_and_invalid_tokens(client, monkeypatch):
     citizen = client.post("/api/auth/demo/citizen")
     assert citizen.json()["user"]["role"] == "citizen"
@@ -37,10 +58,10 @@ def test_demo_auth_roles_and_invalid_tokens(client, monkeypatch):
         == 401
     )
 
-    monkeypatch.setenv("DEMO_MODE", "false")
+    monkeypatch.setattr(main.settings, "demo_mode", False)
     assert client.get("/api/auth/demo-users").status_code == 404
     assert client.post("/api/auth/demo/citizen").status_code == 404
-    monkeypatch.setenv("DEMO_MODE", "true")
+    monkeypatch.setattr(main.settings, "demo_mode", True)
 
 
 def test_case_listing_retry_escalation_and_admin(client, complaint_payload):
@@ -137,12 +158,12 @@ def test_kyc_and_failure_lab_outcomes(client, complaint_payload):
 
 
 def test_velocity_control(client, complaint_payload, monkeypatch):
-    monkeypatch.setenv("SUBMISSION_RATE_LIMIT_PER_MINUTE", "1")
+    monkeypatch.setattr(main.settings, "submission_rate_limit_per_minute", 1)
     main._velocity.clear()
     assert client.post("/api/complaints", json=complaint_payload).status_code == 201
     assert client.post("/api/complaints", json=complaint_payload).status_code == 429
     main._velocity.clear()
-    monkeypatch.setenv("SUBMISSION_RATE_LIMIT_PER_MINUTE", "5")
+    monkeypatch.setattr(main.settings, "submission_rate_limit_per_minute", 5)
 
 
 def test_auth_helpers_reject_non_admin():

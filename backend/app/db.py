@@ -1,5 +1,4 @@
 import json
-import os
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from threading import Lock
@@ -16,9 +15,11 @@ from sqlalchemy import (
     delete,
     select,
 )
+from sqlalchemy.engine import make_url
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
+from .config import AppEnvironment, settings
 from .models import ComplaintState, ComplaintSubmission
 
 
@@ -77,11 +78,22 @@ class EvidenceRecord(Base):
 
 def _to_url(value: str | Path | None) -> str:
     if value is None:
-        return os.getenv("DATABASE_URL", "sqlite:///backend/data/citizen-karen.db")
+        return settings.resolved_database_url
     text = str(value)
     if "://" in text:
         return text
     return f"sqlite:///{Path(text).resolve().as_posix()}"
+
+
+def _ensure_local_sqlite_parent(database_url: str) -> None:
+    if settings.app_env not in {AppEnvironment.LOCAL, AppEnvironment.TEST}:
+        return
+    url = make_url(database_url)
+    if not url.drivername.startswith("sqlite") or not url.database:
+        return
+    if url.database == ":memory:" or url.database.startswith("file:"):
+        return
+    Path(url.database).expanduser().resolve().parent.mkdir(parents=True, exist_ok=True)
 
 
 class ComplaintStore:
@@ -89,6 +101,7 @@ class ComplaintStore:
 
     def __init__(self, database: str | Path | None = None):
         self.database_url = _to_url(database)
+        _ensure_local_sqlite_parent(self.database_url)
         connect_args = (
             {"check_same_thread": False}
             if self.database_url.startswith("sqlite")

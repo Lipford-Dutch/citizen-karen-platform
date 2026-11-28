@@ -39,7 +39,7 @@ class AppClient:
 def client(tmp_path, monkeypatch):
     main._velocity.clear()
     monkeypatch.setattr(main, "store", ComplaintStore(tmp_path / "test.db"))
-    monkeypatch.setenv("FCC_CONNECTOR_MODE", "simulate")
+    monkeypatch.setattr(main.settings, "fcc_connector_mode", "simulate")
     main.store.init()
     yield AppClient()
     main._velocity.clear()

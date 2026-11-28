@@ -1,8 +1,8 @@
-import os
 import secrets
 
 import httpx
 
+from ..config import settings
 from ..logging_config import get_logger
 from .base import AgencyPlugin, PluginManifest
 
@@ -71,8 +71,8 @@ class FccPlugin(AgencyPlugin):
     )
 
     def __init__(self) -> None:
-        self.mode = os.getenv("FCC_CONNECTOR_MODE", "simulate").lower()
-        self.endpoint = os.getenv("FCC_API_URL", "http://localhost:8001/fcc/robocall")
+        self.mode = settings.fcc_connector_mode
+        self.endpoint = settings.fcc_api_url
 
     async def submit(self, complaint: dict) -> dict:
         logger.info("fcc_submission_started", extra={"agency": self.agency_name})

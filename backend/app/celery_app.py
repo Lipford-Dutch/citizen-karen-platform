@@ -1,8 +1,8 @@
-import os
-
 from celery import Celery
 
-broker = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+from .config import settings
+
+broker = settings.redis_url
 celery_app = Celery(
     "citizen_karen", broker=broker, backend=broker, include=["app.tasks"]
 )
