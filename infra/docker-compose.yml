@@ -3,6 +3,7 @@ name: citizen-karen-demo
 x-backend-environment: &backend-environment
   DATABASE_URL: postgresql+psycopg://citizen_karen:local_demo_only@postgres:5432/citizen_karen
   REDIS_URL: redis://redis:6379/0
+  INSECURE_INTERNAL_HOSTS: postgres,redis,otel-collector,mock-fcc
   JWT_SECRET: local-demo-secret-not-for-production
   DEMO_MODE: "true"
   ASYNC_SUBMISSIONS: "true"

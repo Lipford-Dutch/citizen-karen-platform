@@ -4,13 +4,14 @@ import anyio
 
 from app import seed as seed_module
 from app import tasks
+from app.config import settings
 from app.db import ComplaintStore
 from app.models import ComplaintSubmission
 
 
 def test_seed_is_deterministic(tmp_path, monkeypatch):
     database_url = f"sqlite:///{(tmp_path / 'seed.db').as_posix()}"
-    monkeypatch.setenv("DATABASE_URL", database_url)
+    monkeypatch.setattr(settings, "database_url", database_url)
     assert seed_module.seed() == 8
     assert seed_module.seed() == 0
     store = ComplaintStore(database_url)
@@ -21,8 +22,8 @@ def test_seed_is_deterministic(tmp_path, monkeypatch):
 
 def test_actual_submission_task_helper(tmp_path, monkeypatch):
     database_url = f"sqlite:///{(tmp_path / 'task.db').as_posix()}"
-    monkeypatch.setenv("DATABASE_URL", database_url)
-    monkeypatch.setenv("FCC_CONNECTOR_MODE", "simulate")
+    monkeypatch.setattr(settings, "database_url", database_url)
+    monkeypatch.setattr(settings, "fcc_connector_mode", "simulate")
     store = ComplaintStore(database_url)
     store.init()
     store.create(

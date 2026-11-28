@@ -1,9 +1,10 @@
-import os
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import jwt
 from fastapi import Header, HTTPException
+
+from .config import settings
 
 DEMO_USERS = {
     "citizen": {
@@ -28,7 +29,7 @@ DEMO_USERS = {
 
 
 def _secret() -> str:
-    return os.getenv("JWT_SECRET", "local-demo-only-change-before-deployment")
+    return settings.jwt_secret
 
 
 def issue_demo_token(role: str) -> dict[str, Any]:
@@ -53,7 +54,7 @@ def issue_demo_token(role: str) -> dict[str, Any]:
 
 
 def _demo_mode() -> bool:
-    return os.getenv("DEMO_MODE", "true").lower() == "true"
+    return settings.demo_mode
 
 
 def optional_user(

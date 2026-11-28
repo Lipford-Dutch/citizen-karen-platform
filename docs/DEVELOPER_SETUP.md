@@ -41,14 +41,21 @@ The packaged app is at <http://localhost:8080>. Compose uses Alembic-managed Pos
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
+| `APP_ENV` | `local` | Runtime safety profile: `local`, `test`, `staging`, or `production` |
 | `DATABASE_URL` | local SQLite URL | SQLAlchemy database URL; Compose supplies Postgres |
 | `CORS_ORIGINS` | local Vite origins | Comma-separated browser origins |
 | `FCC_CONNECTOR_MODE` | `simulate` | `simulate` or `network` |
 | `FCC_API_URL` | local mock endpoint | Endpoint used in network mode |
+| `FCC_APPROVED_ENDPOINTS` | empty | Exact comma-separated HTTPS FCC endpoints allowed in staging/production; a listed non-default port is explicitly allowed |
 | `REDIS_URL` | local Redis URL | Celery broker and result backend |
+| `INSECURE_INTERNAL_HOSTS` | empty | Exact hosts allowed to use cleartext Redis, OTLP, FCC, or PostgreSQL transport in staging/production; no host is trusted implicitly |
 | `DEMO_MODE` | `true` in Compose | Enables synthetic demo identities and seeded walkthroughs |
 
 Never put production complaint data or credentials in `.env` files checked into Git.
+
+Generate shared-environment JWT secrets with `python -c "import secrets; print(secrets.token_urlsafe(32))"`. Validation requires URL-safe base64 that decodes to at least 32 bytes, at least 16 distinct encoded characters, at least 4 bits of Shannon entropy per encoded character, no periodic or repeated-substring pattern, and no common demo or placeholder markers. These checks are format and quality guards, not proof that a secret was generated randomly; use the documented generator rather than constructing a token manually. Production CORS values must be canonical HTTPS origins such as `https://app.example.com` with no wildcard, path, credentials, query, or fragment. `FCC_API_URL` must exactly match an entry in `FCC_APPROVED_ENDPOINTS`; an explicit matching entry is also how a non-default HTTPS port is authorized. IP literals in loopback, private, and link-local ranges are always rejected.
+
+In staging and production, external Redis uses `rediss://`, external OTLP uses `https://`, and external PostgreSQL uses `sslmode=require` or `sslmode=verify-full`. Cleartext transport is permitted only when the exact destination host appears in `INSECURE_INTERNAL_HOSTS`; short Docker service names are not trusted automatically. The Compose demo explicitly lists its controlled internal service names. SQLite is local/test-only.
 
 ## Quality commands
 

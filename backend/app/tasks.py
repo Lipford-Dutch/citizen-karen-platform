@@ -1,10 +1,10 @@
 import asyncio
-import os
 import smtplib
 from functools import lru_cache
 from typing import Any
 
 from .celery_app import celery_app
+from .config import settings
 from .db import ComplaintStore
 from .logging_config import get_logger
 from .metrics import AGENCY_LATENCY, AGENCY_SUBMISSION, CELERY_TASKS, QUEUE_DEPTH
@@ -135,8 +135,8 @@ def send_confirmation(tracking_id: str) -> dict[str, str]:
     )
     try:
         with smtplib.SMTP(
-            os.getenv("SMTP_HOST", "mailhog"),
-            int(os.getenv("SMTP_PORT", "1025")),
+            settings.smtp_host,
+            settings.smtp_port,
             timeout=5,
         ) as client:
             client.sendmail("demo@citizen-karen.local", ["karen@example.test"], message)
